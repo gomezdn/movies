@@ -1,14 +1,18 @@
-import { useState } from 'react'
-import  { ChakraProvider } from '@chakra-ui/react'
+import  { ChakraProvider, Flex } from '@chakra-ui/react'
+import Footer from './components/Footer'
+import Header from './components/Header'
+import Main from './components/Main'
 
-function App() {
+export default function App() {
   return (
     <ChakraProvider>
-      <div id='app'>
-        
-      </div>
+      <Flex fontFamily='roboto' w='100%' direction='column' id='app'>
+        <Header />
+        <Main />
+        <Footer />
+      </Flex>
     </ChakraProvider>
   )
 }
 
-export default App
+
