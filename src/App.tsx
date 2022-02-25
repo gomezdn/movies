@@ -1,18 +1,13 @@
-import  { ChakraProvider, Flex } from '@chakra-ui/react'
-import Footer from './components/Footer'
-import Header from './components/Header'
-import Main from './components/Main'
+import  { ChakraProvider } from '@chakra-ui/react'
+import { BrowserRouter } from 'react-router-dom'
+import Layout from './components/Layout'
 
 export default function App() {
   return (
-    <ChakraProvider>
-      <Flex fontFamily='roboto' w='100%' direction='column' id='app'>
-        <Header />
-        <Main />
-        <Footer />
-      </Flex>
-    </ChakraProvider>
+    <BrowserRouter>
+      <ChakraProvider>
+        <Layout/>
+      </ChakraProvider>
+    </BrowserRouter>
   )
 }
-
-
