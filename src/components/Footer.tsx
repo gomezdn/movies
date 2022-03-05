@@ -1,6 +1,6 @@
 import { Flex, Text, HStack, Link } from '@chakra-ui/react'
 
-export default function Footer() {
+export function Footer() {
   return (
     <Flex as='footer'>
       <HStack color='gray' paddingX={['1em','']} pb='1em' alignSelf='center' align='center' justify='space-around' spacing={['1em', '5em']}>

@@ -1,3 +1,3 @@
-type MediaObject = Record<string, string|boolean|number|Function>
+type MediaObject = Record<string, string|boolean|number>
 
 export type { MediaObject }

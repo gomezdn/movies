@@ -1,12 +1,12 @@
 import  { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
-import Layout from './components/Layout'
+import WebsiteLayout from './components/WebsiteLayout'
 
 export default function App() {
   return (
     <BrowserRouter>
       <ChakraProvider>
-        <Layout/>
+        <WebsiteLayout/>
       </ChakraProvider>
     </BrowserRouter>
   )
