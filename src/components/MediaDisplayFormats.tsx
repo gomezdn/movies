@@ -3,7 +3,9 @@ import { BsBookmarkPlus, BsBookmarkCheck } from 'react-icons/bs'
 import { useState, useMemo } from 'react'
 import { MediaObject } from '../Types'
 import { API } from '../api/API'
+import { Link } from 'react-router-dom'
 import ImgNotFound from '../images/imageNotFound.png'
+
 
 function addToWatchlist(object: MediaObject, watchlist: MediaObject[], setWatchlist: Function) {
   const newList = Array.from(watchlist).concat([object])
@@ -19,8 +21,8 @@ function removeFromWatchlist(object: MediaObject, watchlist: MediaObject[], setW
 
 function Filler(props: {fillerMsg: string}) {
   return (
-    <Heading fontFamily='saira' color='gray' mt={['2em', '5em']}
-             mb='7em' textAlign='center'>
+    <Heading fontFamily='saira' color='gray' mt={['3em', '4em']}
+             mb={['5em', '7em']} textAlign='center'>
                {props.fillerMsg}
     </Heading>
   )
@@ -55,29 +57,26 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
 
   return (
     <Stack rounded={['md', 'sm']} bg='rgba(100, 100, 100, 0.045)' direction={['column', 'row']}
-           justify='left' align={['center', 'start']} p='2em' spacing='3.5em'>
-      <Image ml={['0', '5em']} maxW='100px' h='auto' rounded='sm' src={imgUrl}/>
-      <VStack fontFamily='saira' justifySelf='right' align={['center', 'left']}>
-        <HStack spacing='2em' w='max-content'>
-          <HStack>
-            <Text color='orange'>{title}</Text>
-            <Text color='orange'>{year}</Text>
-          </HStack>
+           justify='left' align={['end', 'start']} p='1em' spacing={['1em', '3.5em']}>
+      <VStack spacing='1.5' maxW='max-content' mr={['2em', '0']}>
+        <Image maxW='100px' h='auto' rounded='sm' src={imgUrl}/>
+        <Text color='orange' ml={['10em', '0']}>{year}</Text>
+      </VStack>
+      <VStack fontFamily='saira' align={['end', 'start']}>
+        <HStack spacing='1em' mr={['2em', '0']}>
+          <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
           <IconButton onClick={handleIconClick} variant='outline' colorScheme={added? 'green' : 'yellow'}
                       aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
         </HStack>
-        <>
-          <Text fontFamily='liberation-sans' fontSize='0.8em' color='darkgray' p='0 20px 0 20px' isTruncated={isDescriptionTruncated}
-                w={['350px', '500px']} h='auto' bg='rgba(100, 100, 100, 0.085)' rounded='md'>
-                  {overview}
-          </Text>
-          <Text fontFamily='liberation-sans' fontSize='0.8em' cursor='pointer' onClick={toggleTruncated}>{toggleText}</Text>
-        </>
+        <Text fontFamily='liberation-sans' p='0.5em' fontSize='0.8em' color='darkgray'
+              isTruncated={isDescriptionTruncated} maxW={['320px', '500px']} h='auto' bg='rgba(100, 100, 100, 0.085)' rounded='md'>
+                {overview}{String(overview).length >60 ? <Text fontFamily='liberation-sans' color='orange.600' cursor='pointer' onClick={toggleTruncated}>{toggleText}</Text> : ""}
+
+        </Text>
       </VStack>
     </Stack>
   )
 }
-
 
 
 function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWatchlist: Function}) {
@@ -114,8 +113,8 @@ function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWat
         <Image rounded='sm' cursor='pointer' src={imgUrl} w='230px' h='auto'/>
       </Box>
       <Box wordBreak='break-word' fontSize='1em' color='orange' textAlign='center'>
-      <Text >{title}</Text>
-      {isMovie ? <Text >{`(${year})`}</Text> : ''}
+        <Text >{title}</Text>
+        {<Text >{`${year}`}</Text>}
       </Box>
     </VStack>
   )

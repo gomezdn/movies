@@ -1,6 +1,6 @@
-import { Flex, Input, Text, InputGroup, VStack, InputRightElement,
+import { Flex, Input, Text, InputGroup, HStack, VStack, InputRightElement,
          FormControl, IconButton, Button } from '@chakra-ui/react'
-import { SearchIcon, HamburgerIcon, StarIcon } from '@chakra-ui/icons'
+import { SearchIcon, StarIcon } from '@chakra-ui/icons'
 import { API } from '../api/API'
 import { useFormik } from 'formik'
 import { FormEventHandler  } from 'react'
@@ -24,18 +24,17 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
         props.setSearchResults(sortByPop(response))
         if (!response[0]) {props.setFillerMsg('NOTHING FOUND')}
       })
-      values.searchInput = ''
       navigate('/search')
     }
   })
 
   return (
-    <Flex bg='#121212' direction={['column', 'row']}
-          justify='right' p='0.2em 1em' gap='0.8em 3em' align='center' as='header' w='100%'>
+    <Flex bg='#121212' direction={['column', 'row']} position='fixed' zIndex='2'
+          justify='right' p='0.4em 1em' gap={['1em','0.8em 3em']} align='center' as='header' w='100%'>
       
       <Link to='/home'>
         <VStack as='button' userSelect='none' rounded='sm' fontWeight='800'
-                paddingX='0.3em' align='center' justify='center' fontSize='1.1em'
+                paddingX='0.3em' align='center' justify='center' fontSize={['0.9em','1.1em']}
                 spacing='-0.6em' bg='#f5c518' color='black' fontFamily='saira'>
           <Text>The</Text>
           <Text>MovieDB</Text>
@@ -47,7 +46,7 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
               Menu
       </Button> **/}
     
-      <FormControl onSubmit={formik.handleSubmit as FormEventHandler} as='form' maxW={['90%', '65%']}>
+      <FormControl onSubmit={formik.handleSubmit as FormEventHandler} as='form' maxW={['80%', '65%']}>
         <InputGroup>
           <InputRightElement>
             <IconButton textAlign='center' fill='none' outline='none' variant='unstyled' type='submit' size='sm'
@@ -55,19 +54,21 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
           </InputRightElement>
           <Input size='sm' bg='white' value={formik.values.searchInput} onChange={formik.handleChange}
                  name='searchInput' arial-label='Enter your search' autoComplete='off'
-                 placeholder='Search themovieDB' textAlign='left'/>
+                 placeholder={'Search themovieDB'} textAlign='left'/>
         </InputGroup>
       </FormControl>
 
-      <Link to='/watchlist'>
-        <Button size='sm' leftIcon={<StarIcon />} color='white' variant='outline' border='none'>
-                  Watchlist
-        </Button>
-      </Link>
+      <HStack>
+        <Link to='/watchlist'>
+          <Button size='sm' leftIcon={<StarIcon />} color='white' variant='outline' border='none'>
+                    Watchlist
+          </Button>
+        </Link>
 
-      <Button size='sm' border='none' color='white' variant='outline'>
-                Sign in
-      </Button>
+        <Button size='sm' border='none' color='white' variant='outline'>
+                  Sign in
+        </Button>
+      </HStack>
     </Flex>
   )
 }

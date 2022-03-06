@@ -14,8 +14,8 @@ function SearchDisplay(props: {searchResults: MediaObject[], fillerMsg: string,
   }
                                 
   return (
-    <VStack align='left'  justify='center' bg='black' color='white' paddingY='1em'
-            spacing='1em' divider={<StackDivider/>} w={['90%', '60%']}>
+    <VStack align='left' justify='center' bg='black' color='white' paddingY='2em' mt={['8em', '3em']}
+            spacing='1em' divider={<StackDivider/>} w={['93%', '52%']}>
       {content(props.fillerMsg)}
     </VStack>
   )
