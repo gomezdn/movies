@@ -21,8 +21,8 @@ function removeFromWatchlist(object: MediaObject, watchlist: MediaObject[], setW
 
 function Filler(props: {fillerMsg: string}) {
   return (
-    <Heading fontFamily='saira' color='gray' mt={['3em', '4em']}
-             mb={['5em', '7em']} textAlign='center'>
+    <Heading fontFamily='saira' color='gray' mt={['6em', '4em']} p={['1em', '0']}
+             mb='7em' textAlign='center'>
                {props.fillerMsg}
     </Heading>
   )
@@ -63,7 +63,7 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
         <Text color='orange' ml={['10em', '0']}>{year}</Text>
       </VStack>
       <VStack fontFamily='saira' align={['end', 'start']}>
-        <HStack spacing='1em' mr={['2em', '0']}>
+        <HStack spacing='1em' ml='0.35em' mr={['2em', '0']}>
           <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
           <IconButton onClick={handleIconClick} variant='outline' colorScheme={added? 'green' : 'yellow'}
                       aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
