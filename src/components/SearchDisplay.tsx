@@ -1,4 +1,3 @@
-import { VStack, StackDivider } from '@chakra-ui/react'
 import { MediaObject } from '../Types'
 import { MediaResultsDisplay } from './MediaResultsDisplay'
 import { Filler } from './MediaDisplayFormats'

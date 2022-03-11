@@ -1,7 +1,6 @@
 import { Filler } from './MediaDisplayFormats'
 import { MediaObject } from '../Types'
 import { MediaResultsDisplay } from './MediaResultsDisplay'
-import { StackDivider, VStack } from '@chakra-ui/react'
 
 function WatchlistDisplay(props: {watchlist: MediaObject[], setWatchlist: Function}) {
   

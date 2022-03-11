@@ -21,7 +21,7 @@ export function TrendingDisplay(props: {watchlist: MediaObject[], setWatchlist: 
   }, [])
 
   return (
-    <VStack divider={<StackDivider w='80%' alignSelf='center'/>} bg='black' w='100%' padding='2em' mt={['10em', '2em']} spacing='2em'>
+    <VStack divider={<StackDivider w='25%' borderColor='darkgray' alignSelf='center'/>} bg='black' w='100%' padding='2em' mt={['10em', '3em']} spacing='2em'>
       <MediaCardsDisplay watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={movies} heading='Trending movies'/>
       <MediaCardsDisplay watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={shows} heading='Trending shows'/>
     </VStack>

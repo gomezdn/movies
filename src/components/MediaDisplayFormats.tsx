@@ -59,12 +59,16 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
     <Stack rounded={['md', 'sm']} bg='rgba(100, 100, 100, 0.045)' direction={['column', 'row']}
            justify='left' align={['end', 'start']} p='1em' spacing={['1em', '3.5em']}>
       <VStack spacing='1.5' maxW='max-content' mr={['2em', '0']}>
-        <Image maxW='100px' h='auto' rounded='sm' src={imgUrl}/>
+        <Link to={`/${type}/${id}`}>
+          <Image maxW='100px' h='auto' rounded='sm' src={imgUrl}/>
+        </Link>
         <Text color='orange' ml={['10em', '0']}>{year}</Text>
       </VStack>
       <VStack fontFamily='saira' align={['end', 'start']}>
         <HStack spacing='1em' ml='0.35em' mr={['2em', '0']}>
-          <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
+          <Link to={`/${type}/${id}`}>
+            <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
+          </Link>
           <IconButton onClick={handleIconClick} variant='outline' colorScheme={added? 'green' : 'yellow'}
                       aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
         </HStack>
@@ -101,21 +105,25 @@ function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWat
   return (
     <VStack p='0.5em' rounded='sm'
             bg='black' align='center' justify='space-between' maxW='max-content' h='auto'>
-      <Box>
-        <HStack p='0.5em' w={['60%', '17%']} justify='space-between' position='absolute'>
-          <IconButton onClick={handleIconClick} variant='solid' size='lg' colorScheme={added? 'green' : 'yellow'}
-                        aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
-          <Text fontFamily='saira' cursor='pointer' userSelect='none' fontSize='1.4em' p='0.25em' 
-                borderRadius='50px'  color='orange' bg='rgba(133, 133, 133, 0.322)'> 
-                  {rating}
-          </Text>        
-        </HStack>
-        <Image rounded='sm' cursor='pointer' src={imgUrl} w='230px' h='auto'/>
-      </Box>
-      <Box wordBreak='break-word' fontSize='1em' color='orange' textAlign='center'>
-        <Text >{title}</Text>
-        {<Text >{`${year}`}</Text>}
-      </Box>
+        <Box>
+          <HStack p='0.5em' w={['60%', '17%']} justify='space-between' position='absolute'>
+            <IconButton onClick={handleIconClick} variant='solid' size='lg' colorScheme={added? 'green' : 'yellow'}
+                          aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
+            <Text fontFamily='saira' cursor='pointer' userSelect='none' fontSize='1.4em' p='0.25em' 
+                  borderRadius='50px'  color='orange' bg='rgba(133, 133, 133, 0.322)'> 
+                    {rating}
+            </Text>        
+          </HStack>
+          <Link to={`/${type}/${id}`}>
+            <Image rounded='sm' cursor='pointer' src={imgUrl} w='230px' h='auto'/>
+          </Link>
+        </Box>
+      <Link to={`/${type}/${id}`}>
+        <Box wordBreak='break-word' fontSize='1em' color='orange' textAlign='center'>
+          <Text>{title}</Text>
+          {<Text >{`${year}`}</Text>}
+        </Box>
+      </Link>
     </VStack>
   )
 }
