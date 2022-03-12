@@ -27,7 +27,7 @@ export function AppRoutes(props: AppRoutesProps) {
       <Route path='/' element={<Navigate to='/home'/>}/>
       <Route path='*' element={<NotFound/>}/>
       <Route path='/login' element={'login'}/>
-      <Route path='/:type/:id' element={<MediaPage/>}/>
+      <Route path='/:type/:id' element={<MediaPage watchlist={props.watchlist} setWatchlist={props.setWatchlist}/>}/>
       <Route path='/home' element={<TrendingDisplay
                                     watchlist={props.watchlist}
                                     setWatchlist={props.setWatchlist}/>}/>

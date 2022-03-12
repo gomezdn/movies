@@ -44,9 +44,10 @@ export const API = {
     getTrailer: (type: string, titleId: string) => {
       const url = `https://api.themoviedb.org/3/${type}/${titleId}/videos?api_key=${key}&language=en-US`
       return axios.get(url).then(res => {
-        const trailerObject =  res.data.results.find((video: MediaObject) => video.type == 'Trailer' || video.type == 'Teaser')
-        if (trailerObject.site == 'YouTube') {return `https://www.youtube.com/embed/${trailerObject.key}`}
-        if (trailerObject.site == 'Vimeo') {return `https://www.vimeo.com/${trailerObject.key}`}
+        const trailerObject =  res.data.results.find((video: MediaObject) => video.official && (video.type == 'Trailer' || video.type == 'Teaser'))
+        if (trailerObject?.site == 'YouTube') {return `https://www.youtube.com/embed/${trailerObject.key}`}
+        else if (trailerObject?.site == 'Vimeo') {return `https://www.vimeo.com/${trailerObject.key}`}
+        else {return ''}
       })
     }
   },
@@ -61,21 +62,30 @@ export const API = {
         const crew = res.data.crew
         const cast = res.data.cast
 
-        const directors: MediaObject[] = crew.filter((person: CreditsObject) => {
+        const directors: MediaObject[] = type == 'movie'
+        ? crew.filter((person: CreditsObject) => {
           return person.job == 'Director'
         }).map((person: CreditsObject) => {
           return {name: person.name, image: person.profile_path}
         })
-        const allActors: MediaObject[] = cast.filter((person: CreditsObject) => {
-          return person.known_for_department == 'Acting'
-        }).map((person: CreditsObject) => {
+        : []
+
+        const actors: MediaObject[] = cast.sort((person1: CreditsObject, person2: CreditsObject) => {
+          return Number(person2.popularity) - Number(person1.popularity)
+        })
+        .filter((person: CreditsObject) => {
+          return person.known_for_department == 'Acting' && person.profile_path
+        })
+        .splice(0,9)
+        .map((person: CreditsObject) => {
           return {name: person.name, character: person.character, image: person.profile_path}
         })
-        const stars: MediaObject[] = allActors.sort((actor1: CreditsObject, actor2: CreditsObject) => {
+        
+        const stars: MediaObject[] = [...actors].sort((actor1: CreditsObject, actor2: CreditsObject) => {
           return Number(actor2.popularity) - Number(actor1.popularity)
         }).splice(0, 4)
 
-        return {directors, allActors, stars}
+        return {directors, actors, stars}
       })
     }
   }

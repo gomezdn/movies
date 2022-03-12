@@ -10,13 +10,11 @@ import ImgNotFound from '../images/imageNotFound.png'
 function addToWatchlist(object: MediaObject, watchlist: MediaObject[], setWatchlist: Function) {
   const newList = Array.from(watchlist).concat([object])
   setWatchlist(newList)
-  console.log(newList)
 }
 
 function removeFromWatchlist(object: MediaObject, watchlist: MediaObject[], setWatchlist: Function) {
   const newList = watchlist.filter((media: MediaObject) => media.id !== object.id)
   setWatchlist(newList)
-  console.log(newList)
 }
 
 function Filler(props: {fillerMsg: string}) {
@@ -31,8 +29,8 @@ function Filler(props: {fillerMsg: string}) {
 function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchlist: MediaObject[]}) {
   const type = props.object.media_type
   const imgUrl = props.object.poster_path? API.image.getPoster(props.object.poster_path as string, 154) : ImgNotFound
-  const title = type == 'movie' ? props.object.title : props.object.name 
-  const year = String(type == 'movie' ? props.object.release_date : props.object.first_air_date).slice(0,4)
+  const title = props.object.title? props.object.title : props.object.name 
+  const year = String(props.object.release_date? props.object.release_date : props.object.first_air_date).slice(0,4)
   const overview = props.object.overview? props.object.overview : 'Description not available.' 
   const id = props.object.id
 
@@ -66,10 +64,13 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
       </VStack>
       <VStack fontFamily='saira' align={['end', 'start']}>
         <HStack spacing='1em' ml='0.35em' mr={['2em', '0']}>
-          <Link to={`/${type}/${id}`}>
-            <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
-          </Link>
-          <IconButton onClick={handleIconClick} variant='outline' colorScheme={added? 'green' : 'yellow'}
+          <VStack align={['end', 'start']}>
+            <Link to={`/${type}/${id}`}>
+              <Text color='orange' wordBreak='break-word' maxW={['200px', 'max-content']}>{title}</Text>
+            </Link>
+            <Text fontSize='0.8em' color='gray'>{type == 'movie'? 'Movie' : 'TV show'}</Text>
+          </VStack>
+          <IconButton onClick={handleIconClick} variant='outline' colorScheme={added? 'red' : 'green'}
                       aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
         </HStack>
         <Text fontFamily='liberation-sans' p='0.5em' fontSize='0.8em' color='darkgray'
@@ -107,7 +108,7 @@ function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWat
             bg='black' align='center' justify='space-between' maxW='max-content' h='auto'>
         <Box>
           <HStack p='0.5em' w={['60%', '17%']} justify='space-between' position='absolute'>
-            <IconButton onClick={handleIconClick} variant='solid' size='lg' colorScheme={added? 'green' : 'yellow'}
+            <IconButton onClick={handleIconClick} variant='solid' size='lg' colorScheme={added? 'red' : 'green'}
                           aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
             <Text fontFamily='saira' cursor='pointer' userSelect='none' fontSize='1.4em' p='0.25em' 
                   borderRadius='50px'  color='orange' bg='rgba(133, 133, 133, 0.322)'> 
