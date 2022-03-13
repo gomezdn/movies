@@ -2,18 +2,22 @@ import { VStack, HStack, Image, Text, Stack,
          Heading, StackDivider, Tag, Grid, Button } from '@chakra-ui/react'
 import { BsPlusLg } from 'react-icons/bs'
 import { IoRemoveSharp } from 'react-icons/io5'
-import { API } from '../api/API'
-import { useParams } from 'react-router-dom'
+import { tmdbAPI } from '../services/tmdbAPI'
+import { useParams, useNavigate } from 'react-router-dom'
 import { MediaInfo, CreditsObject, MediaObject, InfoObject } from '../Types'
 import { useEffect, useState, useMemo } from 'react'
 import { MdStarRate } from 'react-icons/md'
+import { MediaCard } from './MediaDisplayFormats'
 import ImgNotFound from '../images/imageNotFound.png'
 
+
 async function getInfo(type: string, id: string) {
+
   const info: InfoObject = {
     name: '',
     originalName: '',
     poster: '',
+    backdrop: '',
     rating:  '',
     totalVotes: '',
     duration: '',
@@ -26,19 +30,20 @@ async function getInfo(type: string, id: string) {
     stars: [] as CreditsObject[],
     actors: [] as CreditsObject[],
     directors: [] as CreditsObject[],
+    isAnimation: false,
+    seasonsNumber: '',
+    episodesNumber: '',
+    recommendations: [] as MediaObject[],
   }
 
-  await API.video.getTrailer(type, id).then(res => {
-    info.trailer = res!
-  })
 
-  await API.info.getCredits(type, id).then(res => {
+  await tmdbAPI.info.getCredits(type, id).then(res => {
     info.stars = res.stars
     info.actors = res.actors
     info.directors = res.directors
   })
   
-  await API.info.getDetails(type, id).then((res: MediaInfo) => {
+  await tmdbAPI.info.getDetails(type, id).then((res: MediaInfo) => {
       const isMovie = type == 'movie'
       if (!isMovie) {
         info.directors = (res.created_by as CreditsObject[]).map(creator => {
@@ -47,7 +52,8 @@ async function getInfo(type: string, id: string) {
       }
       info.name = String(isMovie ? res.title : res.name)
       info.originalName = String(isMovie ? res.original_title : res.original_name)
-      info.poster = res.poster_path? API.image.getPoster(String(res.poster_path), 500) : ImgNotFound
+      info.poster = res.poster_path? tmdbAPI.image.getPoster(String(res.poster_path), 500) : ImgNotFound
+      info.backdrop = res.backdrop_path? tmdbAPI.image.getBackdrop(String(res.backdrop_path)) : ''
       info.rating = String(res.vote_average)
       info.totalVotes = String(res.vote_count)
       info.genres = (res.genres as []).map((item: {id: number, name: string}) => item.name)
@@ -61,10 +67,23 @@ async function getInfo(type: string, id: string) {
 
       info.year = String(isMovie ? res.release_date : res.first_air_date).slice(0,4)
       info.description = String(res.overview)
+      
       info.countries = !isMovie
        ? (res.origin_country) as string[]
        : (res.production_countries as {name: string}[]).map(country => country.name) as string[]
-      info.budget = String(isMovie ? res.budget : "")
+
+      info.budget = isMovie? String(res.budget) : ''
+      info.isAnimation = info.genres.some(genre => genre == 'Animation')
+      info.seasonsNumber = !isMovie? String(res.number_of_seasons) : ''
+      info.episodesNumber = !isMovie? String(res.number_of_episodes) : ''
+  })
+
+  await tmdbAPI.video.getTrailer(type, id).then(res => {
+    info.trailer = res!
+  })
+
+  await tmdbAPI.recommendations(type, id).then(res => {
+    info.recommendations = res
   })
 
   return info
@@ -110,8 +129,8 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
 
   function DisplayGenres(props: {genres: string[]}) {
     return (
-      <HStack justify='space-around' w='max-content'>
-        {props.genres?.map(genre => <Tag key={genre}>{genre}</Tag>)}
+      <HStack justify='space-around' w={['100%', 'max-content']}>
+        {props.genres?.map(genre => <Tag wordBreak='break-all' key={genre}>{genre}</Tag>)}
       </HStack>
     )
   }
@@ -121,7 +140,10 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
       <Stack direction={['column', 'row']}  justify='space-around' w='max-content' align={['start', 'end']}>
         <Heading size='md'>{props.type == 'movie' ? 'Director(s)' : 'Created by'}</Heading>
         <Stack direction={['column', 'row']} spacing='1.1em' align='inherit'>
-        {props.directors?.map(director => <Text color='darkgray' key={String(director.name)}>{director.name}</Text>)}
+        {props.directors
+        ? props.directors.length == 0 ? <Text color='darkgray'>Info not available...</Text> 
+                                      : props.directors.map(director => <Text color='darkgray' key={String(director.name)}>{director.name}</Text>) 
+        : ''}
         </Stack>
       </Stack>
     )
@@ -141,7 +163,7 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
   function DisplayCountries(props: {countries: string[]}) {
     return (
       <HStack>
-        <Stack direction={['column', 'row']}>
+        <Stack bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm' direction={['column', 'row']}>
           {props.countries?.map(country => <Text key={country} fontSize='sm'>{country}</Text>)}
         </Stack>
       </HStack>
@@ -152,9 +174,9 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
     return (
       <Grid templateColumns={['1fr', 'repeat(3, 1fr)']} gap='3em'>
         {props.actors?.map(actor => {
-          const imgUrl = actor.image? API.image.getPoster(String(actor.image), 154) : ImgNotFound
+          const imgUrl = actor.image? tmdbAPI.image.getPoster(String(actor.image), 154) : ImgNotFound
           return (
-            <HStack align='end' spacing='1em'>
+            <HStack key={String(actor.name)} align='end' spacing='1em'>
               <Image rounded='40%'  src={imgUrl} w='80px'/>
               <VStack align='start' textAlign='left'>
                 <Heading size='sm'>{actor.name}</Heading>
@@ -166,27 +188,48 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
     )
   }
 
+  function DisplayRecommendations(props: {recommendations: MediaObject[], watchlist: MediaObject[], setWatchlist: Function}) {
+    return (
+      <VStack h='100%' align='start' alignSelf='start'>
+        <Heading color='orange' alignSelf={['center', 'start']}>More like this</Heading>
+        <Grid templateColumns={['1fr', 'repeat(5, 1fr)']} gap='2em' w='100%' justifyItems='center'>
+          {props.recommendations?.map((media: MediaObject) => {
+            return <MediaCard key={String(media.id)} object={media} watchlist={props.watchlist}
+                              setWatchlist={props.setWatchlist} size='200'/>
+            })}
+        </Grid>
+      </VStack>
+    )
+  }
+  
   return (
     <VStack w={['100%', '85%']} color='white' align='start' spacing='2em' rounded='md' fontFamily='liberation-sans'>
-      <HStack justify='space-between' align='end' p='1em' w='100%' bg='rgba(133, 133, 133, 0.15)'>
-        <VStack align='start'>
-          <Heading color='brown' size='2xl' fontFamily='saira'>{info.name}</Heading>
-          <Text fontFamily='saira' size='sm'>{props.type == 'movie' ? 'Movie' : 'Tv show'}</Text>
-          {info.name !== info.originalName ? <Text>{`Original title: ${info.originalName}`}</Text> : ""}
+      <HStack justify='space-between' align='end' p='1em' w='100%' bgImage={['', info.backdrop]} bgSize='cover' bgColor='rgba(133, 133, 133, 0.035)'>
+        <VStack align='start' p='0.15em' rounded='sm'>
+          <Heading bg={['', 'blackAlpha.500']} p='0.065em' rounded='sm' color='orange' size='2xl' fontFamily='liberation-sans'>{info.name}</Heading>
+          <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm' fontFamily='saira' size='sm'>{props.type == 'movie' ? 'Movie' : 'Tv show'}</Text>
+          {info.name !== info.originalName ? <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm'>{`Original title: ${info.originalName}`}</Text> : ""}
           <Stack direction={['column', 'row']}>
-            <Text size='sm'>{props.type == 'tv' ? `First aired in ${info.year} ` : `${info.year} `}</Text>
-            <Text>{props.type == 'tv' ? `| avg runtime ${info.duration} min.` : `| ${info.duration} min.`}</Text>
+            <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm' size='sm'>{props.type == 'tv' ? `First aired in ${info.year} ` : `${info.year} `}</Text>
+            <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm'>{props.type == 'tv' ? `avg runtime ${info.duration} min.` : `| ${info.duration} min.`}</Text>
+            {props.type == 'tv'
+             ? <>
+                <Text bg={['', 'blackAlpha.500']} p='0.15em'>{`${info.seasonsNumber} season${info.seasonsNumber == '1' ? '' : 's'}`}</Text>
+                <Text bg={['', 'blackAlpha.500']} p='0.15em'>{`${info.episodesNumber} episodes`}</Text>
+               </>
+             : ''
+            }
           </Stack>
           <DisplayCountries countries={info.countries}/>
         </VStack>
 
         <VStack align='end' fontFamily='saira'>
-          <Text visibility={['hidden', 'visible']}>TMDB rating</Text>
-          <HStack>
+          <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm' visibility={['hidden', 'visible']}>TMDB rating</Text>
+          <HStack bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm'>
             <MdStarRate color='goldenrod'/>
             <Text>{`${info.rating} / 10`}</Text>
           </HStack>
-          <Text fontSize='sm'>{`${info.totalVotes} votes`}</Text>
+          <Text bg={['', 'blackAlpha.500']} p='0.15em' rounded='sm' fontSize='xs'>{`${info.totalVotes} votes`}</Text>
         </VStack>
       </HStack>
 
@@ -208,29 +251,34 @@ function TitleInfo(props: {id: string, type: string, watchlist: MediaObject[], s
 
       {info.trailer !== ''
       ?<VStack w={['100%', '640px']} spacing={['1em','2em']} h='360px' align='start'>
-          <Heading color='orange'>Trailer</Heading>
+          <Heading color='orange'>Video</Heading>
           <iframe width='100%' height='100%' allowFullScreen src={`${info.trailer}`} title={`${info.name} trailer`}/>
        </VStack>
       :''}
 
       <VStack align='start' spacing={['1em','2em']}>
-        <Heading color='orange'>Top cast</Heading>
+        <Heading color='orange'>{info.isAnimation? 'Voices' : 'Top cast'}</Heading>
         <DisplayFullCast actors={info.actors}/>
       </VStack>
 
+      {info.recommendations
+      ?info.recommendations[0]
+        ?<DisplayRecommendations recommendations={info.recommendations} watchlist={props.watchlist} setWatchlist={props.setWatchlist}/>
+        :''
+      :''}
     </VStack>
   )
 }
 
-function MediaPage(props: {watchlist: MediaObject[], setWatchlist: Function}) {
+function MediaInfoDisplay(props: {watchlist: MediaObject[], setWatchlist: Function}) {
   const { id, type } = useParams()
 
   return (
-    <VStack w='100%' align='center'  mt={['9em', '5em']} p='2em'>
+    <VStack w='100%' align='center' mt={['9em', '5em']} p='2em'>
       <TitleInfo setWatchlist={props.setWatchlist} watchlist={props.watchlist} id={id!} type={type!}/>
     </VStack>
   )
 }
 
 
-export { MediaPage }
+export { MediaInfoDisplay }

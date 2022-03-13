@@ -5,7 +5,7 @@ const key = 'b3fe14b114f41ad7d119818c7cc97d7f'
 const baseSearchUrl = `https://api.themoviedb.org/3/search/`
 const baseTrendingUrl = `https://api.themoviedb.org/3/trending/`
 
-export const API = {
+export const tmdbAPI = {
   search: {
     movies:  (search: string) => {
       const  url = `${baseSearchUrl}movie?&api_key=${key}&query=${search}`
@@ -35,20 +35,32 @@ export const API = {
       return axios.get(url).then(response => response.data.results)
     }
   },
+  recommendations: (type: string, id: string) => {
+    const url = `https://api.themoviedb.org/3/${type}/${id}/recommendations?api_key=${key}`
+    return axios.get(url).then(res => res.data.results.splice(0,5))
+  },
   image: {
     getPoster: (posterPath: string, size: 154|185|342|500) => {
       return `https://image.tmdb.org/t/p/w${size}${posterPath}`
+    },
+    getBackdrop: (backdropPath: string) => {
+      return `https://image.tmdb.org/t/p/w1280${backdropPath}`
     }
   },
   video: {
-    getTrailer: (type: string, titleId: string) => {
-      const url = `https://api.themoviedb.org/3/${type}/${titleId}/videos?api_key=${key}&language=en-US`
+    getTrailer: (type: string, id: string) => {
+      const url = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${key}`
       return axios.get(url).then(res => {
-        const trailerObject =  res.data.results.find((video: MediaObject) => video.official && (video.type == 'Trailer' || video.type == 'Teaser'))
-        if (trailerObject?.site == 'YouTube') {return `https://www.youtube.com/embed/${trailerObject.key}`}
-        else if (trailerObject?.site == 'Vimeo') {return `https://www.vimeo.com/${trailerObject.key}`}
+        const videos = res.data.results.filter((video: MediaObject) => {
+          return video.type == 'Trailer' || video.type == 'Teaser'
+        }).sort((video1: MediaObject, video2: MediaObject) => {
+          return Number(String(video2.published_at).slice(0,4)) - Number(String(video1.published_at).slice(0,4)) 
+        })
+        const trailer = videos[0]
+        if (trailer?.site == 'YouTube') {return `https://www.youtube.com/embed/${trailer.key}`}
+        else if (trailer?.site == 'Vimeo') {return `https://player.vimeo.com/video/${trailer.key}`}
         else {return ''}
-      })
+      }).catch(err => console.log(err))
     }
   },
   info: {

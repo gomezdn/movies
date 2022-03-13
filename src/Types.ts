@@ -6,6 +6,7 @@ type InfoObject = {
   name: string,
   originalName: string,
   poster: string,
+  backdrop: string,
   rating:  string,
   totalVotes: string,
   duration: string|number,
@@ -18,6 +19,10 @@ type InfoObject = {
   stars: MediaObject[],
   actors: MediaObject[],
   directors: MediaObject[],
+  isAnimation: boolean,
+  seasonsNumber: string,
+  episodesNumber: string,
+  recommendations: MediaObject[],
 }
 
 export type { MediaInfo, MediaObject, MediaObject as CreditsObject, InfoObject }

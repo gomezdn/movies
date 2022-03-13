@@ -1,7 +1,7 @@
 import { Flex, Input, Text, InputGroup, HStack, VStack, InputRightElement,
          FormControl, IconButton, Button } from '@chakra-ui/react'
 import { SearchIcon, StarIcon } from '@chakra-ui/icons'
-import { API } from '../api/API'
+import { tmdbAPI } from '../services/tmdbAPI'
 import { useFormik } from 'formik'
 import { FormEventHandler  } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
@@ -20,11 +20,13 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
     initialValues: {searchInput: ''},
     onSubmit: async values => {
       const query = values.searchInput
-      API.search.all(query).then(response => {
-        props.setSearchResults(sortByPop(response))
+      tmdbAPI.search.all(query).then(response => {
+        const validResults = response.filter((result: MediaObject) => result.poster_path)
+        props.setSearchResults(sortByPop(validResults))
         if (!response[0]) {props.setFillerMsg('NOTHING FOUND')}
       })
-      navigate('/search')
+      navigate(`search/${query}`)
+      values.searchInput = ''
     }
   })
 
