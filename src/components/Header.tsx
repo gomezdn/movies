@@ -5,26 +5,20 @@ import { tmdbAPI } from '../services/tmdbAPI'
 import { useFormik } from 'formik'
 import { FormEventHandler  } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { MediaObject } from '../Types'
 
 export function Header(props: {setSearchResults: Function, setFillerMsg: Function}) {
   
   const navigate = useNavigate()
-
-  function sortByPop(mediaList: MediaObject[]) {
-    const listToSort = mediaList
-    return listToSort.sort((a: MediaObject, b: MediaObject) => Number(b.popularity) - Number(a.popularity))
-  }
 
   const formik = useFormik({
     initialValues: {searchInput: ''},
     onSubmit: async values => {
       const query = values.searchInput
       tmdbAPI.search.all(query).then(response => {
-        const validResults = response.filter((result: MediaObject) => result.poster_path)
-        props.setSearchResults(sortByPop(validResults))
+        props.setSearchResults(response)
         if (!response[0]) {props.setFillerMsg('NOTHING FOUND')}
       })
+      window.scroll({top:0, behavior:'smooth'})
       navigate(`search/${query}`)
       values.searchInput = ''
     }
@@ -43,11 +37,6 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
         </VStack>
       </Link>
        
-      {/** <Button variant='outline' color='white' size='sm' border='none'
-              leftIcon={<HamburgerIcon fontSize='1.2em' mb='0.1em'/>}>
-              Menu
-      </Button> **/}
-    
       <FormControl onSubmit={formik.handleSubmit as FormEventHandler} as='form' maxW={['80%', '65%']}>
         <InputGroup>
           <InputRightElement>
@@ -62,7 +51,7 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
 
       <HStack>
         <Link to='/watchlist'>
-          <Button size='sm' leftIcon={<StarIcon />} color='white' variant='outline' border='none'>
+          <Button size='sm' leftIcon={<StarIcon color='goldenrod'/>} color='white' variant='outline' border='none'>
                     Watchlist
           </Button>
         </Link>

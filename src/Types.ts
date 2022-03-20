@@ -2,7 +2,7 @@ type MediaObject = Record<string, string|boolean|number>
 
 type MediaInfo = Record<string, string|boolean|number|(object|string|number)[]>
 
-type InfoObject = {
+type TitleInfoObject = {
   name: string,
   originalName: string,
   poster: string,
@@ -25,4 +25,22 @@ type InfoObject = {
   recommendations: MediaObject[],
 }
 
-export type { MediaInfo, MediaObject, MediaObject as CreditsObject, InfoObject }
+type PersonInfoObject = {
+  birthday: string,
+  deathday: string,
+  role: string,
+  name: string,
+  biography: string,
+  origin: string,
+  image: string,
+  knownFor: PersonJobs
+}
+
+type PersonJobs = {
+  crew: Record<string, MediaObject[]>,
+  crewJobNames: string[],
+  cast: MediaObject[]
+}
+
+export type { MediaInfo, MediaObject, MediaObject as CreditsObject,
+              TitleInfoObject, PersonInfoObject, PersonJobs }

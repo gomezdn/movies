@@ -22,7 +22,13 @@ export const tmdbAPI = {
     },
     all: (search: string) => {
       const  url = `${baseSearchUrl}multi?&api_key=${key}&query=${search}`
-      return axios.get(url).then(response => response.data.results)
+      return axios.get(url).then(response => {
+        const validResults = response.data.results.filter((result: MediaObject) => result.poster_path)
+        validResults.sort((a: MediaObject, b: MediaObject) => {
+          return Number(b.popularity) - Number(a.popularity)
+        })
+        return validResults
+      })
     }
   },
   trending: {
@@ -71,33 +77,65 @@ export const tmdbAPI = {
     getCredits(type: string, titleId: string) {
       const url = ` https://api.themoviedb.org/3/${type}/${titleId}/credits?api_key=${key}&language=en-US`
       return axios.get(url).then(res => {
-        const crew = res.data.crew
-        const cast = res.data.cast
+        const {cast, crew} = res.data
 
         const directors: MediaObject[] = type == 'movie'
         ? crew.filter((person: CreditsObject) => {
           return person.job == 'Director'
-        }).map((person: CreditsObject) => {
-          return {name: person.name, image: person.profile_path}
         })
+         .map((person: CreditsObject) => {
+          const nameForUrl = String(person.name).replace(/\s/g, '_') 
+          return {name: person.name, nameForUrl, image: person.profile_path, id: person.id}
+         })
         : []
+
 
         const actors: MediaObject[] = cast.sort((person1: CreditsObject, person2: CreditsObject) => {
           return Number(person2.popularity) - Number(person1.popularity)
         })
-        .filter((person: CreditsObject) => {
-          return person.known_for_department == 'Acting' && person.profile_path
-        })
-        .splice(0,9)
-        .map((person: CreditsObject) => {
-          return {name: person.name, character: person.character, image: person.profile_path}
-        })
+         .filter((person: CreditsObject) => {
+           return person.known_for_department == 'Acting' && person.profile_path
+         })
+         .splice(0,9)
+         .map((person: CreditsObject) => {
+           const nameForUrl = String(person.name).replace(/\s/g, '_') 
+           return {name: person.name, nameForUrl, character: person.character, image: person.profile_path, id: person.id}
+         })
+
         
         const stars: MediaObject[] = [...actors].sort((actor1: CreditsObject, actor2: CreditsObject) => {
           return Number(actor2.popularity) - Number(actor1.popularity)
         }).splice(0, 4)
 
         return {directors, actors, stars}
+      })
+    },
+    getPersonCredits(id: string) {
+      const url = `https://api.themoviedb.org/3/person/${id}/combined_credits?api_key=${key}`
+      return axios.get(url).then(res => {
+
+        const crewGroupedByJobs: Record<string, MediaObject[]> = res.data.crew
+          .filter((jobObject: MediaObject) => jobObject.job !== 'Thanks')
+          .reduce((accu: Record<string, MediaObject[]>, current: MediaObject) => {
+            if(accu[String(current.job)]) {
+              accu[String(current.job)].push(current)
+              return accu  
+            } else {
+              accu[String(current.job)] = [current]
+              return accu
+              }
+          }, {})
+
+        let crewJobNames = Object.keys(crewGroupedByJobs)
+        if (crewJobNames.includes('Director')) {
+          const directorFirst = [...crewJobNames].filter(job => job !== 'Director')
+          directorFirst.unshift('Director')
+          crewJobNames = directorFirst
+        }
+
+        const acting: MediaObject[] = res.data.cast.splice(0, 30)
+
+        return {cast: acting as MediaObject[], crew: crewGroupedByJobs, crewJobNames}
       })
     }
   }

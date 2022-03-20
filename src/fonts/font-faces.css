@@ -35,7 +35,7 @@
 
 @font-face {
   font-family: 'liberation-sans';
-  src: url('LiberationSans-Regular.ttf') format('opentype');
+  src: url('LiberationSans-Regular.ttf') format('truetype');
   font-weight: 200;
   font-style: normal;
 }

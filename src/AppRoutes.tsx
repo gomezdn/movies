@@ -4,7 +4,7 @@ import { TrendingDisplay } from './components/TrendingDisplay'
 import { MediaObject } from './Types'
 import { SearchDisplay } from './components/SearchDisplay'
 import { WatchlistDisplay } from './components/WatchlistDisplay'
-import { MediaInfoDisplay } from './components/MediaInfoDisplay'
+import { InfoDisplayPage } from './components/InfoDisplayPage'
 
 type AppRoutesProps = {fillerMsg: string,
                        searchResults: MediaObject[],
@@ -27,7 +27,7 @@ export function AppRoutes(props: AppRoutesProps) {
       <Route path='/' element={<Navigate to='/home'/>}/>
       <Route path='*' element={<NotFound/>}/>
       <Route path='/login' element={'login'}/>
-      <Route path='/:type/:id/:name' element={<MediaInfoDisplay watchlist={props.watchlist} setWatchlist={props.setWatchlist}/>}/>
+      <Route path='/:type/:id/:titleForUrl' element={<InfoDisplayPage watchlist={props.watchlist} setWatchlist={props.setWatchlist}/>}/>
       <Route path='/home' element={<TrendingDisplay
                                     watchlist={props.watchlist}
                                     setWatchlist={props.setWatchlist}/>}/>

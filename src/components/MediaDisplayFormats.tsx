@@ -1,6 +1,6 @@
 import { Stack, HStack, IconButton, Text, VStack, Image, Box, Heading } from '@chakra-ui/react'
 import { BsBookmarkPlus, BsBookmarkCheck } from 'react-icons/bs'
-import { useState, useMemo, ReactEventHandler, MouseEventHandler } from 'react'
+import { useState, useMemo } from 'react'
 import { MediaObject } from '../Types'
 import { tmdbAPI } from '../services/tmdbAPI'
 import { Link } from 'react-router-dom'
@@ -36,7 +36,10 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
   const id = props.object.id
 
   const [isDescriptionTruncated, setDescriptionTruncated] = useState(true)
-  const [toggleText, setToggleText] = useState('see more')
+  
+  const toggleText = useMemo(() => {
+    return isDescriptionTruncated ? 'see more' : 'see less'
+  },[isDescriptionTruncated])
   
   const added = useMemo(() => {
     return props.watchlist.some((media: MediaObject) => media.id == id)
@@ -50,8 +53,6 @@ function MediaResult(props: {object: MediaObject, setWatchlist: Function, watchl
 
   function toggleTruncated() {
     setDescriptionTruncated(!isDescriptionTruncated)
-    const newToggleText = toggleText == 'see more' ? 'see less' : 'see more'
-    setToggleText(newToggleText)
   }
 
   return (
@@ -108,13 +109,13 @@ function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWat
   }
 
   return (
-    <VStack p='0.5em' rounded='sm' bg='black' align='center' justify='space-between' maxW='max-content' h='auto'>
+    <Stack p='0.5em' rounded='sm' bg='black' align='center' spacing='1em' direction={['row', 'column']}>
         <Link to={`/${type}/${id}/${titleForUrl}`}>
-          <Box w={`${props.size}px`} h={`${Number(props.size) * 1.5}px`} bgImage={imgUrl} bgSize='cover'>
+          <Box w={['150px', `${props.size}px`]} h={['225px',`${Number(props.size) * 1.5}px`]} bgImage={imgUrl} bgSize='cover'>
             <HStack p='0.5em' justify='space-between' w='100%'>
               <IconButton onClick={handleIconClick} variant='solid' size='lg' colorScheme={added? 'red' : 'green'}
                           aria-label='add to watchlist' icon={added ? <BsBookmarkCheck/> : <BsBookmarkPlus/>}/>
-              <Text fontFamily='saira' cursor='pointer' userSelect='none' fontSize='1.4em' p='0.25em' 
+              <Text fontFamily='saira' cursor='pointer' userSelect='none' fontSize='1.4em' p='0.3em'
                     borderRadius='50px'  color='orange' bg='rgba(133, 133, 133, 0.322)'> 
                       {rating}
               </Text>        
@@ -122,12 +123,12 @@ function MediaCard(props: {object: MediaObject, watchlist: MediaObject[], setWat
           </Box>
         </Link>
       <Link to={`/${type}/${id}/${titleForUrl}`}>
-        <Box fontFamily='roboto' wordBreak='break-word' fontSize='1em' color='orange' textAlign='center'>
-          <Text>{title}</Text>
-          <Text >{`${year}`}</Text>
+        <Box fontFamily='roboto' wordBreak='break-word' fontSize='1em' color='orange' textAlign={['left', 'center']}>
+          <Text wordBreak='keep-all'>{title}</Text>
+          <Text color='whiteAlpha.700'>{`${year}`}</Text>
         </Box>
       </Link>
-    </VStack>
+    </Stack>
   )
 }
 

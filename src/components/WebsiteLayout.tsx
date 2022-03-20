@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Flex } from '@chakra-ui/react'
 import { Header } from './Header'
 import { Footer } from './Footer'

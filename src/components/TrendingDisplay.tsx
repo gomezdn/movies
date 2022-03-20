@@ -11,19 +11,19 @@ export function TrendingDisplay(props: {watchlist: MediaObject[], setWatchlist: 
   useEffect(() => {
     tmdbAPI.trending.movies().then(res => {
       const sortedMoviesByPop = res.sort((a: Record<string, number>, b: Record<string, number>) => a.popularity - b.popularity)
-      setMovies(sortedMoviesByPop.slice(0,12))
+      setMovies(sortedMoviesByPop)
     })
     
     tmdbAPI.trending.shows().then(res => {
       const sortedShowsByPop = res.sort((a: Record<string, number>, b: Record<string, number>) => a.popularity - b.popularity)
-      setShows(sortedShowsByPop.slice(0,12))
+      setShows(sortedShowsByPop)
     })
   }, [])
 
   return (
-    <VStack divider={<StackDivider w='25%' borderColor='darkgray' alignSelf='center'/>} bg='black' w='100%' padding='2em' mt={['10em', '3em']} spacing='2em'>
-      <MediaCardsDisplay size='250' watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={movies} heading='Trending movies'/>
-      <MediaCardsDisplay size='250' watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={shows} heading='Trending shows'/>
+    <VStack divider={<StackDivider w='25%' borderColor='darkgray' alignSelf='center'/>} w='100%' padding='2em' mt={['10em', '3em']} spacing='2em'>
+      <MediaCardsDisplay size='230' watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={movies} heading='Trending movies'/>
+      <MediaCardsDisplay size='230' watchlist={props.watchlist} setWatchlist={props.setWatchlist} mediaList={shows} heading='Trending shows'/>
     </VStack>
   )
 }
