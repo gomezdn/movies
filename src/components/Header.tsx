@@ -24,12 +24,16 @@ export function Header(props: {setSearchResults: Function, setFillerMsg: Functio
     }
   })
 
+  function handleHomeClick() {
+    document.title = 'the movie DataBase'
+  }
+
   return (
     <Flex bg='#121212' direction={['column', 'row']} position='fixed' zIndex='2'
           justify='right' p='0.4em 1em' gap={['1em','0.8em 3em']} align='center' as='header' w='100%'>
       
       <Link to='/home'>
-        <VStack as='button' userSelect='none' rounded='sm' fontWeight='800'
+        <VStack as='button' userSelect='none' rounded='sm' fontWeight='800' onClick={handleHomeClick}
                 paddingX='0.3em' align='center' justify='center' fontSize={['0.9em','1.1em']}
                 spacing='-0.6em' bg='#f5c518' color='black' fontFamily='saira'>
           <Text>The</Text>
