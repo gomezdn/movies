@@ -9,6 +9,7 @@ import {
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { FormEventHandler, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { register, login } from '../services/watchlistAPI';
 
 function LoginForm(props: { signup: boolean }) {
   const location = useLocation();
@@ -20,7 +21,7 @@ function LoginForm(props: { signup: boolean }) {
   const formik = useFormik({
     initialValues: {
       username: '',
-      userEmail: '',
+      email: '',
       password: '',
     },
     validate,
@@ -31,12 +32,12 @@ function LoginForm(props: { signup: boolean }) {
 
   function validate(values: FormikValues) {
     const errors: FormikErrors<FormikValues> = {};
-    const userEmail = values.userEmail.trim();
+    const email = values.email.trim();
     const password = values.password.trim();
     const username = values.username.trim();
 
-    if (!userEmail) {
-      errors.userEmail = 'Enter email';
+    if (!email) {
+      errors.email = 'Enter email';
     }
 
     if (!password) {
@@ -50,7 +51,13 @@ function LoginForm(props: { signup: boolean }) {
     return errors;
   }
 
-  function handleFormSubmit() {}
+  function handleFormSubmit(values: FormikValues) {
+    if (props.signup) {
+      register(values);
+    } else {
+      login(values);
+    }
+  }
 
   return (
     <FormControl
@@ -89,12 +96,12 @@ function LoginForm(props: { signup: boolean }) {
           color="white"
           textAlign="start"
           variant="flushed"
-          name="userEmail"
-          value={formik.values.userEmail}
+          name="email"
+          value={formik.values.email}
           onChange={formik.handleChange}
           placeholder="Email"
         />
-        <Text color="brown">{formik.errors.userEmail || ' '}</Text>
+        <Text color="brown">{formik.errors.email || ' '}</Text>
       </VStack>
 
       <VStack>
