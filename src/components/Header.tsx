@@ -1,3 +1,7 @@
+import { FormEventHandler } from 'react';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { SearchIcon, StarIcon } from '@chakra-ui/icons';
 import {
   Flex,
   Input,
@@ -9,12 +13,75 @@ import {
   FormControl,
   IconButton,
   Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
-import { SearchIcon, StarIcon } from '@chakra-ui/icons';
 import { tmdbAPI } from '../services/tmdbAPI';
 import { useFormik } from 'formik';
-import { FormEventHandler } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { signout } from '../features/auth/authSlice';
+
+import { ReduxState } from '../Types';
+
+function AuthMenu(props: { username?: string; redirect: Function }) {
+  const { username, redirect } = props;
+  const dispatch = useDispatch();
+
+  function logout() {
+    dispatch(signout());
+    redirect();
+  }
+
+  return username ? (
+    <Menu>
+      <MenuButton
+        border="1px solid"
+        variant="outline"
+        color="white"
+        size="sm"
+        as={Button}
+        _focus={{}}
+        _hover={{ border: '1px solid orange' }}
+        _active={{ bg: '', border: '1px solid' }}
+      >
+        {username}
+      </MenuButton>
+      <MenuList
+        _hover={{ border: '1px solid brown' }}
+        _focus={{}}
+        mt="0.45em"
+        minWidth="0"
+        color="white"
+        bg="black"
+      >
+        <MenuItem
+          _focus={{}}
+          _active={{}}
+          fontWeight="bold"
+          height="15px"
+          onClick={logout}
+        >
+          Log out
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  ) : (
+    <Link to="/auth/login">
+      <Button
+        size="sm"
+        border="1px solid white"
+        color="white"
+        variant="outline"
+        _hover={{ border: '1px solid orange' }}
+        _focus={{}}
+        _active={{ bg: '', border: '1px solid' }}
+      >
+        Sign in
+      </Button>
+    </Link>
+  );
+}
 
 export function Header(props: {
   setSearchResults: Function;
@@ -22,16 +89,21 @@ export function Header(props: {
 }) {
   const navigate = useNavigate();
 
+  const { username, token } = useSelector(
+    (state: ReduxState) => state.auth
+  ) || { username: '', token: '' };
+
   const formik = useFormik({
     initialValues: { searchInput: '' },
     onSubmit: async (values) => {
       const query = values.searchInput;
-      tmdbAPI.search.all(query).then((response) => {
-        props.setSearchResults(response);
-        if (!response[0]) {
-          props.setFillerMsg('NOTHING FOUND');
-        }
-      });
+      const response = await tmdbAPI.search.all(query);
+      props.setSearchResults(response);
+
+      if (!response[0]) {
+        props.setFillerMsg('NOTHING FOUND');
+      }
+
       window.scroll({ top: 0, behavior: 'smooth' });
       navigate(`search/${query}`);
       values.searchInput = '';
@@ -115,17 +187,16 @@ export function Header(props: {
             leftIcon={<StarIcon color="goldenrod" />}
             color="white"
             variant="outline"
-            border="none"
+            border="1px solid"
+            _hover={{ border: '1px solid orange' }}
+            _focus={{}}
+            _active={{ bg: '', border: '1px solid' }}
           >
             Watchlist
           </Button>
         </Link>
 
-        <Link to="/auth/login">
-          <Button size="sm" border="none" color="white" variant="outline">
-            Sign in
-          </Button>
-        </Link>
+        <AuthMenu username={username} redirect={() => navigate('/home')} />
       </HStack>
     </Flex>
   );

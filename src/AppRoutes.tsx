@@ -1,11 +1,12 @@
 import { Heading } from '@chakra-ui/react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { TrendingDisplay } from './components/TrendingDisplay';
-import { MediaObject } from './Types';
+import { MediaObject, ReduxState } from './Types';
 import { SearchDisplay } from './components/SearchDisplay';
 import { WatchlistDisplay } from './components/WatchlistDisplay';
 import { InfoDisplayPage } from './components/InfoDisplayPage';
-import { LoginForm } from './components/LoginForm';
+import { AuthForm } from './components/AuthForm';
+import { useSelector } from 'react-redux';
 
 type AppRoutesProps = {
   fillerMsg: string;
@@ -32,12 +33,22 @@ function NotFound() {
 }
 
 export function AppRoutes(props: AppRoutesProps) {
+  const { token } = useSelector((state: ReduxState) => state.auth) || {
+    token: '',
+  };
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="*" element={<NotFound />} />
-      <Route path="/auth/login" element={<LoginForm signup={false} />} />
-      <Route path="/auth/signup" element={<LoginForm signup={true} />} />
+      <Route
+        path="/auth/login"
+        element={token ? <Navigate to="/home" /> : <AuthForm signup={false} />}
+      />
+      <Route
+        path="/auth/signup"
+        element={token ? <Navigate to="/home" /> : <AuthForm signup={true} />}
+      />
 
       <Route
         path="/:type/:id/:titleForUrl"
