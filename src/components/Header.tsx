@@ -21,6 +21,7 @@ import {
 import { tmdbAPI } from '../services/tmdbAPI';
 import { useFormik } from 'formik';
 import { signout } from '../features/auth/authSlice';
+import { confirmAlert } from '../services/alertsService';
 import { ReduxState } from '../Types';
 
 function AuthMenu(props: { username?: string; redirect: Function }) {
@@ -28,8 +29,10 @@ function AuthMenu(props: { username?: string; redirect: Function }) {
   const dispatch = useDispatch();
 
   function logout() {
-    dispatch(signout());
-    redirect();
+    confirmAlert('Log out?', () => {
+      dispatch(signout());
+      redirect();
+    });
   }
 
   return username ? (
