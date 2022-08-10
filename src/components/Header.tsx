@@ -21,7 +21,6 @@ import {
 import { tmdbAPI } from '../services/tmdbAPI';
 import { useFormik } from 'formik';
 import { signout } from '../features/auth/authSlice';
-
 import { ReduxState } from '../Types';
 
 function AuthMenu(props: { username?: string; redirect: Function }) {
@@ -161,9 +160,10 @@ export function Header(props: {
               outline="none"
               variant="unstyled"
               type="submit"
-              size="sm"
+              size="md"
               aria-label="Search button"
-              icon={<SearchIcon mb="0.7em" />}
+              _focus={{}}
+              icon={<SearchIcon mb="0.5em" />}
             />
           </InputRightElement>
           <Input

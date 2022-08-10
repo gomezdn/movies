@@ -1,13 +1,17 @@
 import { FormEventHandler, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   VStack,
   Input,
+  InputGroup,
+  InputRightElement,
   FormControl,
   Text,
   HStack,
   Button,
+  Spinner,
 } from '@chakra-ui/react';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { register, login } from '../services/watchlistAPI';
@@ -16,18 +20,19 @@ import {
   validateEmail,
   validatePassword,
 } from '../validations/authFormValidations';
-import { successAlert } from '../services/alertsService';
-import { signin, signout } from '../features/auth/authSlice';
+import { signin } from '../features/auth/authSlice';
 import { AuthData } from '../Types';
 
-function AuthForm(props: { signup: boolean }) {
+function AuthForm({ signup }: { signup: boolean }) {
   const location = useLocation();
-  const [authError, setAuthError] = useState(' ');
+  const [authMessage, setAuthMessage] = useState({ message: '', color: '' });
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     formik.resetForm();
-    setAuthError(' ');
+    setAuthMessage({ message: '', color: '' });
   }, [location]);
 
   const formik = useFormik({
@@ -45,7 +50,7 @@ function AuthForm(props: { signup: boolean }) {
   function validate(values: FormikValues) {
     const errors: FormikErrors<FormikValues> = {};
 
-    if (props.signup) {
+    if (signup) {
       validateUsername(values, errors);
     }
 
@@ -57,20 +62,21 @@ function AuthForm(props: { signup: boolean }) {
   async function handleFormSubmit(values: FormikValues) {
     let result: { error?: string; message?: string; auth?: AuthData } = {};
 
-    if (props.signup) {
+    setAuthMessage({ message: '', color: '' });
+    setSpinnerVisible(true);
+    if (signup) {
       result = await register(values);
     } else {
       result = await login(values);
     }
 
+    setSpinnerVisible(false);
     if (result.error) {
-      setAuthError(result.error);
+      setAuthMessage({ message: result.error, color: 'brown' });
     } else if (result.message) {
-      successAlert(result.message);
-      setAuthError('');
-    } else if (result.auth) {
+      setAuthMessage({ message: result.message, color: 'green' });
+    } else {
       dispatch(signin(result.auth));
-      successAlert(`Welcome ${result.auth.username}!`);
     }
   }
 
@@ -79,7 +85,7 @@ function AuthForm(props: { signup: boolean }) {
       as="form"
       display="flex"
       flexDirection="column"
-      rowGap={props.signup ? '1em' : '2em'}
+      rowGap={signup ? '1em' : '2em'}
       border="5px solid orange"
       rounded="5px"
       p={['3em', '4em']}
@@ -89,8 +95,9 @@ function AuthForm(props: { signup: boolean }) {
       maxHeight="450px"
       onSubmit={formik.handleSubmit as FormEventHandler}
     >
-      <VStack display={props.signup ? 'inherit' : 'none'}>
+      <VStack display={signup ? 'inherit' : 'none'}>
         <Input
+          autoComplete="off"
           width={['100%', '80%']}
           fontWeight="bold"
           color="white"
@@ -106,6 +113,7 @@ function AuthForm(props: { signup: boolean }) {
 
       <VStack>
         <Input
+          autoComplete="off"
           width={['100%', '80%']}
           fontWeight="bold"
           color="white"
@@ -120,40 +128,56 @@ function AuthForm(props: { signup: boolean }) {
       </VStack>
 
       <VStack>
-        <Input
-          width={['100%', '80%']}
-          fontWeight="bold"
-          color="white"
-          textAlign="start"
-          variant="flushed"
-          name="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-          placeholder="Password"
-        />
-        <Text color="brown">{formik.errors.password || authError || ' '}</Text>
+        <InputGroup justifyContent="center">
+          <Input
+            width={['100%', '80%']}
+            fontWeight="bold"
+            color="white"
+            textAlign="start"
+            variant="flushed"
+            name="password"
+            type={passwordVisible ? 'text' : 'password'}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            placeholder="Password"
+          />
+          <InputRightElement
+            cursor="pointer"
+            color="white"
+            mr={['0', '2em']}
+            onClick={() => setPasswordVisible((lastState) => !lastState)}
+            children={passwordVisible ? <ViewIcon /> : <ViewOffIcon />}
+          />
+        </InputGroup>
+        <Text textAlign="center" color={authMessage?.color || 'brown'}>
+          {formik.errors.password || authMessage?.message || ' '}
+        </Text>
       </VStack>
 
-      <Button
-        bg="goldenrod"
-        fontWeight="bold"
-        width="max-content"
-        alignSelf="center"
-        size="sm"
-        type="submit"
-        height="80%"
-      >
-        {props.signup ? 'Sign up' : 'Login'}
-      </Button>
+      {spinnerVisible ? (
+        <Spinner alignSelf="center" size="lg" color="orange" speed="0.8s" />
+      ) : (
+        <Button
+          bg="goldenrod"
+          fontWeight="bold"
+          width="max-content"
+          alignSelf="center"
+          size="sm"
+          type="submit"
+          height="max-content"
+        >
+          {signup ? 'Sign up' : 'Login'}
+        </Button>
+      )}
 
       <HStack alignSelf="center">
         <Text color="white">
-          {props.signup ? 'Already have an account?' : "Don't have an account?"}{' '}
+          {signup ? 'Already have an account?' : "Don't have an account?"}{' '}
         </Text>
 
-        <Link to={props.signup ? '/auth/login' : '/auth/signup'}>
+        <Link to={signup ? '/auth/login' : '/auth/signup'}>
           <Text as="span" color="orange">
-            {props.signup ? 'Sign in' : 'Register'}
+            {signup ? 'Sign in' : 'Register'}
           </Text>
         </Link>
       </HStack>
