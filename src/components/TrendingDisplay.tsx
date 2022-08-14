@@ -1,13 +1,10 @@
 import { useSelector } from 'react-redux';
-import { VStack, StackDivider } from '@chakra-ui/react';
+import { VStack, StackDivider, Progress } from '@chakra-ui/react';
 import { tmdbAPI } from '../services/tmdbAPI';
 import { useState, useEffect } from 'react';
-import { MediaObject } from '../Types';
 import { MediaCardsDisplay } from './MediaCardsDisplay';
-import {
-  getWatchlist,
-  fetchUserWatchlist,
-} from '../features/watchlist/watchlistSlice';
+import { Filler } from './Filler';
+import { fetchUserWatchlist } from '../features/watchlist/watchlistSlice';
 import { getUserData } from '../features/auth/authSlice';
 import { useAppDispatch } from '../app/store';
 
@@ -16,14 +13,13 @@ export function TrendingDisplay() {
   const [fetching, setFetching] = useState(false);
   const [movies, setMovies] = useState([]);
   const [shows, setShows] = useState([]);
-  const watchlist = useSelector(getWatchlist) || ([] as MediaObject[]);
   const { token } = useSelector(getUserData);
 
   useEffect(() => {
-    setFetching(true);
-
     (async () => {
-      if (token && watchlist.length == 0) {
+      setFetching(true);
+
+      if (token) {
         await dispatch(fetchUserWatchlist(token));
       }
 
@@ -45,9 +41,19 @@ export function TrendingDisplay() {
     })();
   }, []);
 
-  return (
+  return fetching ? (
+    <VStack mb={['5em', '15em']}>
+      <Filler marginBottom="2em" fillerMsg="GETTING TRENDING TITLES..." />
+      <Progress
+        width={['300px', '800px']}
+        height="20px"
+        colorScheme="yellow"
+        hasStripe
+        isIndeterminate
+      />
+    </VStack>
+  ) : (
     <VStack
-      visibility={fetching ? 'hidden' : 'visible'}
       divider={
         <StackDivider w="25%" borderColor="darkgray" alignSelf="center" />
       }
