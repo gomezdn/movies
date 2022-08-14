@@ -1,6 +1,7 @@
 import { FormEventHandler } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useFormik } from 'formik';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { SearchIcon, StarIcon } from '@chakra-ui/icons';
 import {
   Flex,
@@ -19,18 +20,20 @@ import {
   MenuItem,
 } from '@chakra-ui/react';
 import { tmdbAPI } from '../services/tmdbAPI';
-import { useFormik } from 'formik';
-import { signout } from '../features/auth/authSlice';
 import { confirmAlert } from '../services/alertsService';
-import { ReduxState } from '../Types';
+import { signout, getUserData } from '../features/auth/authSlice';
+import { clearWatchlist } from '../features/watchlist/watchlistSlice';
+import { useAppDispatch } from '../app/store';
+import { searchAll } from '../features/searchResults/searchResultsSlice';
 
 function AuthMenu(props: { username?: string; redirect: Function }) {
   const { username, redirect } = props;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   function logout() {
     confirmAlert('Log out?', () => {
       dispatch(signout());
+      dispatch(clearWatchlist());
       redirect();
     });
   }
@@ -85,26 +88,17 @@ function AuthMenu(props: { username?: string; redirect: Function }) {
   );
 }
 
-export function Header(props: {
-  setSearchResults: Function;
-  setFillerMsg: Function;
-}) {
+export function Header() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const { username, token } = useSelector(
-    (state: ReduxState) => state.auth
-  ) || { username: '', token: '' };
+  const { username, token } = useSelector(getUserData);
 
   const formik = useFormik({
     initialValues: { searchInput: '' },
     onSubmit: async (values) => {
       const query = values.searchInput;
-      const response = await tmdbAPI.search.all(query);
-      props.setSearchResults(response);
-
-      if (!response[0]) {
-        props.setFillerMsg('NOTHING FOUND');
-      }
+      dispatch(searchAll(query));
 
       window.scroll({ top: 0, behavior: 'smooth' });
       navigate(`search/${query}`);

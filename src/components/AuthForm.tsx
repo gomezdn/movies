@@ -1,6 +1,6 @@
 import { FormEventHandler, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   VStack,
@@ -14,25 +14,30 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
-import { register, login } from '../services/watchlistAPI';
 import {
   validateUsername,
   validateEmail,
   validatePassword,
 } from '../validations/authFormValidations';
-import { signin } from '../features/auth/authSlice';
-import { AuthData } from '../Types';
+import {
+  register,
+  login,
+  getAuthLoading,
+  getAuthMessage,
+  resetAuthMessage,
+} from '../features/auth/authSlice';
+import { useAppDispatch } from '../app/store';
 
 function AuthForm({ signup }: { signup: boolean }) {
   const location = useLocation();
-  const [authMessage, setAuthMessage] = useState({ message: '', color: '' });
-  const [spinnerVisible, setSpinnerVisible] = useState(false);
+  const authMessage = useSelector(getAuthMessage);
+  const spinnerVisible = useSelector(getAuthLoading);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     formik.resetForm();
-    setAuthMessage({ message: '', color: '' });
+    dispatch(resetAuthMessage());
   }, [location]);
 
   const formik = useFormik({
@@ -53,30 +58,16 @@ function AuthForm({ signup }: { signup: boolean }) {
     if (signup) {
       validateUsername(values, errors);
     }
-
     validateEmail(values, errors);
     validatePassword(values, errors);
     return errors;
   }
 
   async function handleFormSubmit(values: FormikValues) {
-    let result: { error?: string; message?: string; auth?: AuthData } = {};
-
-    setAuthMessage({ message: '', color: '' });
-    setSpinnerVisible(true);
     if (signup) {
-      result = await register(values);
+      dispatch(register(values));
     } else {
-      result = await login(values);
-    }
-
-    setSpinnerVisible(false);
-    if (result.error) {
-      setAuthMessage({ message: result.error, color: 'brown' });
-    } else if (result.message) {
-      setAuthMessage({ message: result.message, color: 'green' });
-    } else {
-      dispatch(signin(result.auth));
+      dispatch(login(values));
     }
   }
 

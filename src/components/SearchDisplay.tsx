@@ -1,20 +1,22 @@
-import { MediaObject } from '../Types'
-import { MediaResultsDisplay } from './MediaResultsDisplay'
-import { Filler } from './MediaDisplayFormats'
+import { useSelector } from 'react-redux';
+import { MediaResultsDisplay } from './MediaResultsDisplay';
+import { Filler } from './Filler';
+import {
+  getLoading,
+  getSearchResults,
+  getSearchResultsFiller,
+} from '../features/searchResults/searchResultsSlice';
 
-function SearchDisplay(props: {searchResults: MediaObject[], fillerMsg: string,
-                               isLogged: boolean, setIsLogged: Function,
-                               watchlist: MediaObject[], setWatchlist: Function}) {
+function SearchDisplay() {
+  const searchResults = useSelector(getSearchResults);
+  const fillerMsg = useSelector(getSearchResultsFiller);
+  const searching = useSelector(getLoading);
 
-  function content(fillerMsg: string) {
-    return props.searchResults[0]? <MediaResultsDisplay watchlist={props.watchlist}
-                                                        resultsToDisplay={props.searchResults}
-                                                        setWatchlist={props.setWatchlist}/> : <Filler fillerMsg={fillerMsg}/>
-  }
-                                
-  return (
-    content(props.fillerMsg)
-  )
+  return searching || searchResults.length == 0 ? (
+    <Filler fillerMsg={fillerMsg} />
+  ) : (
+    <MediaResultsDisplay resultsToDisplay={searchResults} />
+  );
 }
 
-export { SearchDisplay }
+export { SearchDisplay };

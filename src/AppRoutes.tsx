@@ -1,22 +1,12 @@
 import { Heading } from '@chakra-ui/react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { TrendingDisplay } from './components/TrendingDisplay';
-import { MediaObject, ReduxState } from './Types';
 import { SearchDisplay } from './components/SearchDisplay';
 import { WatchlistDisplay } from './components/WatchlistDisplay';
-import { InfoDisplayPage } from './components/InfoDisplayPage';
+import { InfoDisplayPage } from './components/InfoDisplay/InfoDisplayPage';
 import { AuthForm } from './components/AuthForm';
 import { useSelector } from 'react-redux';
-
-type AppRoutesProps = {
-  fillerMsg: string;
-  searchResults: MediaObject[];
-  setSearchResults: Function;
-  watchlist: MediaObject[];
-  setWatchlist: Function;
-  isLogged: boolean;
-  setIsLogged: Function;
-};
+import { getUserData } from './features/auth/authSlice';
 
 function NotFound() {
   return (
@@ -32,10 +22,8 @@ function NotFound() {
   );
 }
 
-export function AppRoutes(props: AppRoutesProps) {
-  const { token } = useSelector((state: ReduxState) => state.auth) || {
-    token: '',
-  };
+export function AppRoutes() {
+  const { token } = useSelector(getUserData);
 
   return (
     <Routes>
@@ -50,46 +38,10 @@ export function AppRoutes(props: AppRoutesProps) {
         element={token ? <Navigate to="/home" /> : <AuthForm signup={true} />}
       />
 
-      <Route
-        path="/:type/:id/:titleForUrl"
-        element={
-          <InfoDisplayPage
-            watchlist={props.watchlist}
-            setWatchlist={props.setWatchlist}
-          />
-        }
-      />
-      <Route
-        path="/home"
-        element={
-          <TrendingDisplay
-            watchlist={props.watchlist}
-            setWatchlist={props.setWatchlist}
-          />
-        }
-      />
-      <Route
-        path="/watchlist"
-        element={
-          <WatchlistDisplay
-            watchlist={props.watchlist}
-            setWatchlist={props.setWatchlist}
-          />
-        }
-      />
-      <Route
-        path="/search/:query"
-        element={
-          <SearchDisplay
-            fillerMsg={props.fillerMsg}
-            watchlist={props.watchlist}
-            setWatchlist={props.setWatchlist}
-            searchResults={props.searchResults}
-            isLogged={props.isLogged}
-            setIsLogged={props.setIsLogged}
-          />
-        }
-      />
+      <Route path="/:type/:id/:titleForUrl" element={<InfoDisplayPage />} />
+      <Route path="/home" element={<TrendingDisplay />} />
+      <Route path="/watchlist" element={<WatchlistDisplay />} />
+      <Route path="/search/:query" element={<SearchDisplay />} />
     </Routes>
   );
 }

@@ -24,4 +24,23 @@ async function confirmAlert(question: string, action: Function) {
     action();
   }
 }
-export { confirmAlert };
+
+function infoAlert(info: string) {
+  Swal.fire({
+    title: info,
+    showCancelButton: false,
+    confirmButtonText: 'Ok',
+    width: '300px',
+    padding: '1em',
+    background: 'goldenrod',
+    showClass: {
+      popup: '',
+    },
+    hideClass: {
+      popup: '',
+    },
+    color: 'black',
+    confirmButtonColor: '#969A97',
+  });
+}
+export { confirmAlert, infoAlert };

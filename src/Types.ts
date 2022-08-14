@@ -15,7 +15,6 @@ type TitleInfoObject = {
   duration: string | number;
   year: string;
   description: string;
-  budget: string;
   genres: string[];
   countries: string[];
   trailer: string;
@@ -45,13 +44,32 @@ type PersonJobs = {
   cast: MediaObject[];
 };
 
-interface AuthData {
-  username: string;
-  token: string;
+interface AuthState {
+  userData: {
+    username: string;
+    token: string;
+  };
+  loading: boolean;
+  authMessage: { color: string; message: string };
+}
+
+interface WatchlistState {
+  userWatchlist: MediaObject[];
+  message: string;
+  fetching: boolean;
+  updatingId: string;
+}
+
+interface SearchResultsState {
+  searchResults: MediaObject[];
+  loading: boolean;
+  fillerMsg: string;
 }
 
 interface ReduxState {
-  auth: AuthData;
+  auth: AuthState;
+  watchlist: WatchlistState;
+  searchResults: SearchResultsState;
 }
 
 export type {
@@ -62,5 +80,4 @@ export type {
   PersonInfoObject,
   PersonJobs,
   ReduxState,
-  AuthData,
 };
