@@ -62,7 +62,15 @@ const watchlistSlice = createSlice({
           if (error) {
             state.message = error;
           } else {
-            state.userWatchlist = userWatchlist;
+            const newestFirst = userWatchlist.sort(
+              (
+                movie1: { historicalPosition: number },
+                movie2: { historicalPosition: number }
+              ) => {
+                return movie2.historicalPosition - movie1.historicalPosition;
+              }
+            );
+            state.userWatchlist = newestFirst;
           }
         }
       )
