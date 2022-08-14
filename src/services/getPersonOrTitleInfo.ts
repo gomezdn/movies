@@ -1,5 +1,4 @@
 import { tmdbAPI } from './tmdbAPI';
-import ImgNotFound from '../images/imageNotFound.png';
 import {
   CreditsObject,
   MediaInfo,
@@ -86,9 +85,7 @@ async function getTitleInfo(type: string, id: string) {
       isMovie ? res.original_title : res.original_name
     );
 
-    info.poster = res.poster_path
-      ? tmdbAPI.image.getPoster(String(res.poster_path), 500)
-      : ImgNotFound;
+    info.poster = tmdbAPI.image.getPoster(String(res.poster_path), 500);
 
     info.backdrop = res.backdrop_path
       ? tmdbAPI.image.getBackdrop(String(res.backdrop_path))

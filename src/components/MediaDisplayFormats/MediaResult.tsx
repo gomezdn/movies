@@ -13,7 +13,6 @@ import { useState, useMemo } from 'react';
 import { MediaObject } from '../../Types';
 import { tmdbAPI } from '../../services/tmdbAPI';
 import { Link } from 'react-router-dom';
-import ImgNotFound from '../../images/imageNotFound.png';
 import { useAppDispatch } from '../../app/store';
 import { handleAddOrDeleteMovie } from '../../services/handleAddOrDeleteMovie';
 import {
@@ -37,10 +36,9 @@ function MediaResult(props: { object: MediaObject }) {
 
   const type = props.object.type || props.object.media_type;
 
-  const imgUrl = (props.object.imgUrl ||
-    (props.object.poster_path
-      ? tmdbAPI.image.getPoster(props.object.poster_path as string, 154)
-      : ImgNotFound)) as string;
+  const imgUrl =
+    (props.object.imgUrl as string) ||
+    tmdbAPI.image.getPoster(props.object.poster_path as string, 154);
 
   const title = props.object.title || props.object.name;
 

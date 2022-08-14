@@ -12,7 +12,6 @@ import { useMemo } from 'react';
 import { MediaObject } from '../../Types';
 import { tmdbAPI } from '../../services/tmdbAPI';
 import { Link } from 'react-router-dom';
-import ImgNotFound from '../../images/imageNotFound.png';
 import { useAppDispatch } from '../../app/store';
 import { handleAddOrDeleteMovie } from '../../services/handleAddOrDeleteMovie';
 import {
@@ -34,9 +33,10 @@ function MediaCard(props: { object: MediaObject; size: string }) {
 
   const isMovie = type == 'movie';
 
-  const imgUrl = (props.object.imgUrl = props.object.poster_path
-    ? tmdbAPI.image.getPoster(props.object.poster_path as string, 342)
-    : ImgNotFound);
+  const imgUrl = (props.object.imgUrl = tmdbAPI.image.getPoster(
+    props.object.poster_path as string,
+    342
+  ));
 
   const title = (props.object.title = isMovie
     ? props.object.title
