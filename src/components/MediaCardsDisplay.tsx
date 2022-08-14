@@ -10,7 +10,7 @@ function MediaCardsDisplay(props: {
   return (
     <VStack w="100%" align="center" spacing="1.7em">
       <Heading
-        fontSize={['2.5em', '3em']}
+        fontSize={['2.5em', '4em']}
         fontFamily="saira"
         fontWeight="800"
         color="goldenrod"

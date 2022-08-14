@@ -35,7 +35,7 @@ async function handleAddOrDeleteMovie(
       await dispatch(fetchUserWatchlist(token));
     }
   } else {
-    infoAlert('Log in to save movies');
+    infoAlert('Log in first');
   }
 }
 

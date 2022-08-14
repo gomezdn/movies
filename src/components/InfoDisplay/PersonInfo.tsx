@@ -3,6 +3,7 @@ import { VStack, Image, Text, Stack, Heading, Grid } from '@chakra-ui/react';
 import { getPersonInfo } from '../../services/getPersonOrTitleInfo';
 import { MediaObject, PersonInfoObject, PersonJobs } from '../../Types';
 import MediaCard from '../MediaDisplayFormats/MediaCard';
+import ImgNotFound from '../../images/imageNotFound.png';
 
 function DisplayJobs(props: { jobs: PersonJobs }) {
   return (
@@ -54,12 +55,14 @@ function PersonInfo(props: { id: string; setIsLoading: Function }) {
   const [info, setInfo] = useState({} as PersonInfoObject);
 
   useEffect(() => {
-    props.setIsLoading(true);
-    getPersonInfo(props.id).then((res: PersonInfoObject) => {
-      setInfo(res);
-      document.title = res.name;
+    (async () => {
+      props.setIsLoading(true);
+      const info = await getPersonInfo(props.id);
+      setInfo(info);
+      document.title = info.name;
       props.setIsLoading(false);
-    });
+      console.log({ info });
+    })();
   }, [props.id]);
 
   return (
@@ -71,11 +74,13 @@ function PersonInfo(props: { id: string; setIsLoading: Function }) {
       spacing={['1em', '3em']}
     >
       <Stack w="100%" spacing="1em" direction={['column', 'row']}>
-        {info.image ? (
-          <Image src={info.image} rounded="md" maxW="200px" h="auto" />
-        ) : (
-          ''
-        )}
+        <Image
+          src={info.image || ImgNotFound}
+          rounded="md"
+          maxW="200px"
+          h="auto"
+        />
+
         <VStack align="left" justify="end">
           <Heading
             fontSize={['2em', '2.5em']}
@@ -84,7 +89,11 @@ function PersonInfo(props: { id: string; setIsLoading: Function }) {
           >
             {info.name}
           </Heading>
-          <Text fontFamily="saira">{`Born in ${info.birthday}, ${info.origin}`}</Text>
+          <Text fontFamily="saira">{`Born in: ${
+            info.birthday == '--' || info.origin == '--'
+              ? 'info not available'
+              : `${info.birthday}, ${info.origin}`
+          }`}</Text>
         </VStack>
       </Stack>
       <Text

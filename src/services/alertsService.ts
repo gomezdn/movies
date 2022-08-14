@@ -6,7 +6,7 @@ async function confirmAlert(question: string, action: Function) {
     showCancelButton: true,
     confirmButtonText: 'Yes',
     cancelButtonText: 'No',
-    width: '300px',
+    width: '400px',
     padding: '1em',
     background: 'black',
     showClass: {
@@ -30,7 +30,7 @@ function infoAlert(info: string) {
     title: info,
     showCancelButton: false,
     confirmButtonText: 'Ok',
-    width: '300px',
+    width: '400px',
     padding: '1em',
     background: 'goldenrod',
     showClass: {
@@ -40,7 +40,7 @@ function infoAlert(info: string) {
       popup: '',
     },
     color: 'black',
-    confirmButtonColor: '#969A97',
+    confirmButtonColor: 'black',
   });
 }
 export { confirmAlert, infoAlert };
