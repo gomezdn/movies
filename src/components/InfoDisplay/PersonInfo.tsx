@@ -51,7 +51,11 @@ function DisplayJobs(props: { jobs: PersonJobs }) {
   );
 }
 
-function PersonInfo(props: { id: string; setIsLoading: Function }) {
+function PersonInfo(props: {
+  id: string;
+  setIsLoading: Function;
+  isLoading: boolean;
+}) {
   const [info, setInfo] = useState({} as PersonInfoObject);
 
   useEffect(() => {
@@ -61,7 +65,6 @@ function PersonInfo(props: { id: string; setIsLoading: Function }) {
       setInfo(info);
       document.title = info.name;
       props.setIsLoading(false);
-      console.log({ info });
     })();
   }, [props.id]);
 
@@ -75,7 +78,7 @@ function PersonInfo(props: { id: string; setIsLoading: Function }) {
     >
       <Stack w="100%" spacing="1em" direction={['column', 'row']}>
         <Image
-          src={info.image || ImgNotFound}
+          src={props.isLoading ? '' : info.image || ImgNotFound}
           rounded="md"
           maxW="200px"
           h="auto"

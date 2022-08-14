@@ -75,7 +75,12 @@ async function getTitleInfo(type: string, id: string) {
     if (!isMovie) {
       info.directors = (res.created_by as CreditsObject[]).map((creator) => {
         const nameForUrl = String(creator.name).replace(/\s/g, '_');
-        return { name: creator.name, nameForUrl, image: creator.profile_path };
+        return {
+          name: creator.name,
+          nameForUrl,
+          image: creator.profile_path,
+          id: creator.id,
+        };
       });
     }
 
@@ -91,7 +96,7 @@ async function getTitleInfo(type: string, id: string) {
       ? tmdbAPI.image.getBackdrop(String(res.backdrop_path))
       : '';
 
-    info.rating = String(res.vote_average);
+    info.rating = String(Number(res.vote_average).toFixed(1));
 
     info.totalVotes = String(res.vote_count);
 

@@ -13,37 +13,41 @@ import { useAppDispatch } from '../app/store';
 
 export function TrendingDisplay() {
   const dispatch = useAppDispatch();
+  const [fetching, setFetching] = useState(false);
   const [movies, setMovies] = useState([]);
   const [shows, setShows] = useState([]);
   const watchlist = useSelector(getWatchlist) || ([] as MediaObject[]);
   const { token } = useSelector(getUserData);
 
   useEffect(() => {
+    setFetching(true);
+
     (async () => {
       if (token && watchlist.length == 0) {
         await dispatch(fetchUserWatchlist(token));
       }
 
-      tmdbAPI.trending.movies().then((res) => {
-        const sortedMoviesByPop = res.sort(
-          (a: Record<string, number>, b: Record<string, number>) =>
-            a.popularity - b.popularity
-        );
-        setMovies(sortedMoviesByPop);
-      });
+      const movies = await tmdbAPI.trending.movies();
+      const sortedMoviesByPop = movies.sort(
+        (a: Record<string, number>, b: Record<string, number>) =>
+          a.popularity - b.popularity
+      );
+      setMovies(sortedMoviesByPop);
 
-      tmdbAPI.trending.shows().then((res) => {
-        const sortedShowsByPop = res.sort(
-          (a: Record<string, number>, b: Record<string, number>) =>
-            a.popularity - b.popularity
-        );
-        setShows(sortedShowsByPop);
-      });
+      const shows = await tmdbAPI.trending.shows();
+      const sortedShowsByPop = shows.sort(
+        (a: Record<string, number>, b: Record<string, number>) =>
+          a.popularity - b.popularity
+      );
+      setShows(sortedShowsByPop);
+
+      setFetching(false);
     })();
   }, []);
 
   return (
     <VStack
+      visibility={fetching ? 'hidden' : 'visible'}
       divider={
         <StackDivider w="25%" borderColor="darkgray" alignSelf="center" />
       }

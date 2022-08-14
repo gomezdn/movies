@@ -17,7 +17,11 @@ function InfoDisplayPage() {
       visibility={isLoading ? 'hidden' : 'visible'}
     >
       {type == 'person' ? (
-        <PersonInfo setIsLoading={setIsLoading} id={id!} />
+        <PersonInfo
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          id={id!}
+        />
       ) : (
         <TitleInfo setIsLoading={setIsLoading} id={id!} type={type!} />
       )}

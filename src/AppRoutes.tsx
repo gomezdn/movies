@@ -29,7 +29,7 @@ export function AppRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence>
+    <AnimatePresence exitBeforeEnter>
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"

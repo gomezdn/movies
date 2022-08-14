@@ -19,7 +19,6 @@ import {
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import { tmdbAPI } from '../services/tmdbAPI';
 import { confirmAlert } from '../services/alertsService';
 import { signout, getUserData } from '../features/auth/authSlice';
 import { clearWatchlist } from '../features/watchlist/watchlistSlice';
@@ -31,10 +30,12 @@ function AuthMenu(props: { username?: string; redirect: Function }) {
   const dispatch = useAppDispatch();
 
   function logout() {
-    confirmAlert('Log out?', () => {
-      dispatch(signout());
-      dispatch(clearWatchlist());
+    confirmAlert('Log out?', async () => {
       redirect();
+      setTimeout(() => {
+        dispatch(signout());
+        dispatch(clearWatchlist());
+      }, 500);
     });
   }
 

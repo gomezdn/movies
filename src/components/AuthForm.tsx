@@ -83,6 +83,8 @@ function AuthForm({ signup }: { signup: boolean }) {
       bg="black"
       m={['12em 0', '5em 0']}
       width={['90%', '40%']}
+      alignSelf="center"
+      justifySelf="center"
       maxHeight="450px"
       onSubmit={formik.handleSubmit as FormEventHandler}
     >

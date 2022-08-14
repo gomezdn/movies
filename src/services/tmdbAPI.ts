@@ -65,29 +65,26 @@ export const tmdbAPI = {
   video: {
     getTrailer: (type: string, id: string) => {
       const url = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${key}`;
-      return axios
-        .get(url)
-        .then((res) => {
-          const videos = res.data.results
-            .filter((video: MediaObject) => {
-              return video.type == 'Trailer' || video.type == 'Teaser';
-            })
-            .sort((video1: MediaObject, video2: MediaObject) => {
-              return (
-                Number(String(video2.published_at).slice(0, 4)) -
-                Number(String(video1.published_at).slice(0, 4))
-              );
-            });
-          const trailer = videos[0];
-          if (trailer?.site == 'YouTube') {
-            return `https://www.youtube.com/embed/${trailer.key}`;
-          } else if (trailer?.site == 'Vimeo') {
-            return `https://player.vimeo.com/video/${trailer.key}`;
-          } else {
-            return '';
-          }
-        })
-        .catch((err) => console.log(err));
+      return axios.get(url).then((res) => {
+        const videos = res.data.results
+          .filter((video: MediaObject) => {
+            return video.type == 'Trailer' || video.type == 'Teaser';
+          })
+          .sort((video1: MediaObject, video2: MediaObject) => {
+            return (
+              Number(String(video2.published_at).slice(0, 4)) -
+              Number(String(video1.published_at).slice(0, 4))
+            );
+          });
+        const trailer = videos[0];
+        if (trailer?.site == 'YouTube') {
+          return `https://www.youtube.com/embed/${trailer.key}`;
+        } else if (trailer?.site == 'Vimeo') {
+          return `https://player.vimeo.com/video/${trailer.key}`;
+        } else {
+          return '';
+        }
+      });
     },
   },
   info: {
