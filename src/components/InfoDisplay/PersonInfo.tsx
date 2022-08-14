@@ -64,7 +64,7 @@ function PersonInfo(props: {
       const info = await getPersonInfo(props.id);
       setInfo(info);
       document.title = info.name;
-      props.setIsLoading(false);
+      setTimeout(() => props.setIsLoading(false), 300);
     })();
   }, [props.id]);
 
