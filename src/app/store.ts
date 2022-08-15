@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import watchlistReducer from '../features/watchlist/watchlistSlice';
 import searchResultsReducer from '../features/searchResults/searchResultsSlice';
+import trendingReducer from '../features/trending/trendingSlice';
 
 type AppDispatch = typeof store.dispatch;
 
@@ -13,6 +14,7 @@ const store = configureStore({
     auth: authReducer,
     watchlist: watchlistReducer,
     searchResults: searchResultsReducer,
+    trending: trendingReducer,
   },
 });
 

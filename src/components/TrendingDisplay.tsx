@@ -1,43 +1,36 @@
 import { useSelector } from 'react-redux';
 import { VStack, StackDivider, Progress } from '@chakra-ui/react';
-import { tmdbAPI } from '../services/tmdbAPI';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { MediaCardsDisplay } from './MediaCardsDisplay';
 import { Filler } from './Filler';
-import { fetchUserWatchlist } from '../features/watchlist/watchlistSlice';
 import { getUserData } from '../features/auth/authSlice';
+import {
+  fetchTrending,
+  getTrendingLoading,
+  getTrendingMovies,
+  getTrendingShows,
+} from '../features/trending/trendingSlice';
+import {
+  getWatchlist,
+  fetchUserWatchlist,
+} from '../features/watchlist/watchlistSlice';
 import { useAppDispatch } from '../app/store';
 
 export function TrendingDisplay() {
   const dispatch = useAppDispatch();
-  const [fetching, setFetching] = useState(false);
-  const [movies, setMovies] = useState([]);
-  const [shows, setShows] = useState([]);
+  const movies = useSelector(getTrendingMovies);
+  const shows = useSelector(getTrendingShows);
+  const fetching = useSelector(getTrendingLoading);
+
   const { token } = useSelector(getUserData);
+  const watchlist = useSelector(getWatchlist);
 
   useEffect(() => {
     (async () => {
-      setFetching(true);
-
-      if (token) {
+      if (token && !watchlist[0]) {
         await dispatch(fetchUserWatchlist(token));
       }
-
-      const movies = await tmdbAPI.trending.movies();
-      const sortedMoviesByPop = movies.sort(
-        (a: Record<string, number>, b: Record<string, number>) =>
-          a.popularity - b.popularity
-      );
-      setMovies(sortedMoviesByPop);
-
-      const shows = await tmdbAPI.trending.shows();
-      const sortedShowsByPop = shows.sort(
-        (a: Record<string, number>, b: Record<string, number>) =>
-          a.popularity - b.popularity
-      );
-      setShows(sortedShowsByPop);
-
-      setFetching(false);
+      dispatch(fetchTrending());
     })();
   }, []);
 

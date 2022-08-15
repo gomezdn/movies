@@ -66,10 +66,17 @@ interface SearchResultsState {
   fillerMsg: string;
 }
 
+interface TrendingState {
+  trendingMovies: MediaObject[];
+  trendingShows: MediaObject[];
+  loading: boolean;
+}
+
 interface ReduxState {
   auth: AuthState;
   watchlist: WatchlistState;
   searchResults: SearchResultsState;
+  trending: TrendingState;
 }
 
 export type {
@@ -79,5 +86,6 @@ export type {
   TitleInfoObject,
   PersonInfoObject,
   PersonJobs,
+  TrendingState,
   ReduxState,
 };
