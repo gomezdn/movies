@@ -1,5 +1,5 @@
 import { FormEventHandler } from 'react';
-import { useFormik } from 'formik';
+import { FormikValues, useFormik } from 'formik';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { SearchIcon, StarIcon } from '@chakra-ui/icons';
@@ -93,19 +93,22 @@ export function Header() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { username, token } = useSelector(getUserData);
+  const { username } = useSelector(getUserData);
 
   const formik = useFormik({
     initialValues: { searchInput: '' },
-    onSubmit: async (values) => {
-      const query = values.searchInput;
-      dispatch(searchAll(query));
-
-      window.scroll({ top: 0, behavior: 'smooth' });
-      navigate(`search/${query}`);
-      values.searchInput = '';
-    },
+    onSubmit: handleFormSubmit
   });
+
+  async function handleFormSubmit(values: FormikValues) {
+    const query = values.searchInput;
+    await dispatch(searchAll(query));
+
+    window.scroll({ top: 0, behavior: 'smooth' });
+    navigate(`search/${query}`);
+    
+    values.searchInput = '';
+  }
 
   function handleHomeClick() {
     document.title = 'the movie DataBase';
