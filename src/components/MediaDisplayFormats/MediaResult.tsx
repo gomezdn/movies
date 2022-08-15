@@ -11,7 +11,6 @@ import {
 import { BsBookmarkPlus, BsBookmarkCheck } from 'react-icons/bs';
 import { useState, useMemo } from 'react';
 import { MediaObject } from '../../Types';
-import { tmdbAPI } from '../../services/tmdbAPI';
 import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../../app/store';
 import { handleAddOrDeleteMovie } from '../../services/handleAddOrDeleteMovie';
@@ -20,6 +19,7 @@ import {
   getIdBeingUpdated,
 } from '../../features/watchlist/watchlistSlice';
 import { getUserData } from '../../features/auth/authSlice';
+import { getMediaResultProps } from '../../services/makePropsForMediaResult';
 
 function MediaResult(props: { object: MediaObject }) {
   const dispatch = useAppDispatch();
@@ -34,39 +34,8 @@ function MediaResult(props: { object: MediaObject }) {
     return isDescriptionTruncated ? 'see more' : 'see less';
   }, [isDescriptionTruncated]);
 
-  const type = props.object.type || props.object.media_type;
-
-  const imgUrl =
-    (props.object.imgUrl as string) ||
-    tmdbAPI.image.getPoster(props.object.poster_path as string, 154);
-
-  const title = props.object.title || props.object.name;
-
-  const titleForUrl = String(title).replace(/\s/g, '_');
-
-  const year =
-    props.object.year ||
-    String(
-      props.object.release_date
-        ? props.object.release_date
-        : props.object.first_air_date
-    ).slice(0, 4);
-
-  const overview = props.object.overview
-    ? props.object.overview
-    : 'Description not available.';
-
-  const id = String(props.object.id);
-
-  const movieObject = {
-    id,
-    type,
-    imgUrl,
-    title,
-    titleForUrl,
-    year,
-    overview,
-  };
+  const movieObject = getMediaResultProps(props.object);
+  const { id, type, imgUrl, title, titleForUrl, year, overview } = movieObject;
 
   const added = useMemo(() => {
     return watchlist.some((media: MediaObject) => media.id == id);
@@ -78,6 +47,7 @@ function MediaResult(props: { object: MediaObject }) {
 
   return (
     <Stack
+      w={['100%', '50%']}
       rounded={['md', 'sm']}
       bg="rgba(100, 100, 100, 0.045)"
       direction={['column', 'row']}

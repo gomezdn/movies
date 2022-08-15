@@ -10,7 +10,6 @@ import {
 import { BsBookmarkPlus, BsBookmarkCheck } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { MediaObject } from '../../Types';
-import { tmdbAPI } from '../../services/tmdbAPI';
 import { Link } from 'react-router-dom';
 import { useAppDispatch } from '../../app/store';
 import { handleAddOrDeleteMovie } from '../../services/handleAddOrDeleteMovie';
@@ -19,6 +18,7 @@ import {
   getIdBeingUpdated,
 } from '../../features/watchlist/watchlistSlice';
 import { getUserData } from '../../features/auth/authSlice';
+import { getMediaCardProps } from '../../services/makePropsForMediaCard';
 
 function MediaCard(props: { object: MediaObject; size: string }) {
   const dispatch = useAppDispatch();
@@ -26,48 +26,12 @@ function MediaCard(props: { object: MediaObject; size: string }) {
   const watchlist = useSelector(getWatchlist) || ([] as MediaObject[]);
   const { token } = useSelector(getUserData);
   const idBeingUpdated = useSelector(getIdBeingUpdated);
-
-  const id = (props.object.id = String(props.object.id));
-
-  const type = (props.object.type = props.object.media_type);
-
-  const isMovie = type == 'movie';
-
-  const imgUrl = (props.object.imgUrl = tmdbAPI.image.getPoster(
-    props.object.poster_path as string,
-    342
-  ));
-
-  const title = (props.object.title = isMovie
-    ? props.object.title
-    : (props.object.name as string));
-
-  const titleForUrl = (props.object.titleForUrl = String(title).replace(
-    /\s/g,
-    '_'
-  ));
-  const year = (props.object.year = String(
-    isMovie ? props.object.release_date : props.object.first_air_date
-  ).slice(0, 4));
-
-  let rating = String(props.object.vote_average);
-  rating = String(
-    Number(rating.length > 1 ? rating : `${rating}.0`).toFixed(1)
-  );
+  const { movieObject, rating } = getMediaCardProps(props.object);
+  const { id, type, imgUrl, title, titleForUrl, year } = movieObject;
 
   const added = useMemo(() => {
     return watchlist.some((media: MediaObject) => media.id == id);
   }, [watchlist]);
-
-  const movieObject = {
-    id,
-    type,
-    imgUrl,
-    title,
-    titleForUrl,
-    year,
-    overview: props.object.overview,
-  };
 
   return (
     <Stack
