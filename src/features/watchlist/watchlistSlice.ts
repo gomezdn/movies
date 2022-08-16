@@ -64,10 +64,13 @@ const watchlistSlice = createSlice({
           } else {
             const newestFirst = userWatchlist.sort(
               (
-                movie1: { historicalPosition: number },
-                movie2: { historicalPosition: number }
+                movie1: { UserWatchlist: { addedAt: string } },
+                movie2: { UserWatchlist: { addedAt: string } }
               ) => {
-                return movie2.historicalPosition - movie1.historicalPosition;
+                const d1 = Date.parse(movie1.UserWatchlist.addedAt);
+                const d2 = Date.parse(movie2.UserWatchlist.addedAt);
+
+                return d2 - d1;
               }
             );
             state.userWatchlist = newestFirst;

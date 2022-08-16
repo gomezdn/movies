@@ -371,7 +371,8 @@ function TitleInfo(props: {
                   token,
                   props.id,
                   titleObject,
-                  dispatch
+                  dispatch,
+                  idBeingUpted
                 );
               }}
             >

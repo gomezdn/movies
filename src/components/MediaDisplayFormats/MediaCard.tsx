@@ -66,7 +66,8 @@ function MediaCard(props: { object: MediaObject; size: string }) {
                     token,
                     id,
                     movieObject,
-                    dispatch
+                    dispatch,
+                    idBeingUpdated
                   );
                 }}
                 variant="solid"

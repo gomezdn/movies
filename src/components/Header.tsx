@@ -97,17 +97,19 @@ export function Header() {
 
   const formik = useFormik({
     initialValues: { searchInput: '' },
-    onSubmit: handleFormSubmit
+    onSubmit: handleFormSubmit,
   });
 
   async function handleFormSubmit(values: FormikValues) {
-    const query = values.searchInput;
-    await dispatch(searchAll(query));
+    const query = values.searchInput.trim();
+    if (query) {
+      await dispatch(searchAll(query));
 
-    window.scroll({ top: 0, behavior: 'smooth' });
-    navigate(`search/${query}`);
-    
-    values.searchInput = '';
+      window.scroll({ top: 0, behavior: 'smooth' });
+      navigate(`search/${query}`);
+
+      values.searchInput = '';
+    }
   }
 
   function handleHomeClick() {

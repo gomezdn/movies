@@ -86,7 +86,14 @@ function MediaResult(props: { object: MediaObject }) {
           ) : (
             <IconButton
               onClick={() =>
-                handleAddOrDeleteMovie(added, token, id, movieObject, dispatch)
+                handleAddOrDeleteMovie(
+                  added,
+                  token,
+                  id,
+                  movieObject,
+                  dispatch,
+                  idBeingUpdated
+                )
               }
               variant="outline"
               colorScheme={added ? 'red' : 'green'}
