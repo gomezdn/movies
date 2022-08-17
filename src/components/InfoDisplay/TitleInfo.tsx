@@ -239,7 +239,7 @@ function TitleInfo(props: {
       w={['100%', '85%']}
       color="white"
       align="start"
-      spacing="2em"
+      spacing="4em"
       rounded="md"
     >
       <HStack
