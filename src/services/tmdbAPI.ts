@@ -35,11 +35,11 @@ export const tmdbAPI = {
   },
   trending: {
     movies: () => {
-      const url = `${baseTrendingUrl}movie/week?api_key=${key}`;
+      const url = `${baseTrendingUrl}movie/day?api_key=${key}`;
       return axios.get(url).then((response) => response.data.results);
     },
     shows: () => {
-      const url = `${baseTrendingUrl}tv/week?api_key=${key}`;
+      const url = `${baseTrendingUrl}tv/day?api_key=${key}`;
       return axios.get(url).then((response) => response.data.results);
     },
   },
