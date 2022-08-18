@@ -29,15 +29,17 @@ import {
 import { useAppDispatch } from '../app/store';
 
 function AuthForm({ signup }: { signup: boolean }) {
-  const location = useLocation() as { state: { previousRoute: string } };
+  const location = useLocation();
   const authMessage = useSelector(getAuthMessage);
   const spinnerVisible = useSelector(getAuthLoading);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    formik.resetForm();
-    dispatch(resetAuthMessage());
+    if (location.pathname != '/auth/login') {
+      formik.resetForm();
+      dispatch(resetAuthMessage());
+    }
   }, [location]);
 
   const formik = useFormik({
@@ -59,7 +61,7 @@ function AuthForm({ signup }: { signup: boolean }) {
       validateUsername(values, errors);
     }
     validateEmail(values, errors);
-    validatePassword(values, errors);
+    validatePassword(signup, values, errors);
     return errors;
   }
 

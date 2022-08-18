@@ -27,6 +27,7 @@ function validateEmail(
 }
 
 function validatePassword(
+  signup: boolean,
   values: FormikValues,
   errors: FormikErrors<FormikValues>
 ) {
@@ -34,7 +35,7 @@ function validatePassword(
 
   if (!password) {
     errors.password = 'Enter password';
-  } else if (password.length < 8 || password.length > 20) {
+  } else if (signup && (password.length < 8 || password.length > 20)) {
     errors.password = 'Password must have between 8 and 15 characters';
   }
 }
