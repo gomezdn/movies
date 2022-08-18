@@ -1,6 +1,6 @@
 import { FormEventHandler } from 'react';
 import { FormikValues, useFormik } from 'formik';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { SearchIcon, StarIcon } from '@chakra-ui/icons';
 import {
@@ -25,13 +25,12 @@ import { clearWatchlist } from '../features/watchlist/watchlistSlice';
 import { useAppDispatch } from '../app/store';
 import { searchAll } from '../features/searchResults/searchResultsSlice';
 
-function AuthMenu(props: { username?: string; redirect: Function }) {
-  const { username, redirect } = props;
+function AuthMenu(props: { username?: string }) {
+  const { username } = props;
   const dispatch = useAppDispatch();
 
   function logout() {
     confirmAlert('Log out?', async () => {
-      redirect();
       setTimeout(() => {
         dispatch(signout());
         dispatch(clearWatchlist());
@@ -199,7 +198,7 @@ export function Header() {
           </Button>
         </Link>
 
-        <AuthMenu username={username} redirect={() => navigate('/home')} />
+        <AuthMenu username={username} />
       </HStack>
     </Flex>
   );

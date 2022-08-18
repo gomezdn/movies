@@ -29,7 +29,7 @@ import {
 import { useAppDispatch } from '../app/store';
 
 function AuthForm({ signup }: { signup: boolean }) {
-  const location = useLocation();
+  const location = useLocation() as { state: { previousRoute: string } };
   const authMessage = useSelector(getAuthMessage);
   const spinnerVisible = useSelector(getAuthLoading);
   const [passwordVisible, setPasswordVisible] = useState(false);

@@ -9,6 +9,7 @@ import { AuthForm } from './components/AuthForm';
 import { useSelector } from 'react-redux';
 import { getUserData } from './features/auth/authSlice';
 import { AnimatedRoute } from './components/AnimatedRoute';
+import { useEffect, useState } from 'react';
 
 function NotFound() {
   return (
@@ -27,6 +28,14 @@ function NotFound() {
 export function AppRoutes() {
   const { token } = useSelector(getUserData);
   const location = useLocation();
+  const [previousRoute, setPreviousRoute] = useState('');
+
+  useEffect(() => {
+    const { pathname } = location;
+    if (!['/auth/login', '/auth/signup'].includes(pathname)) {
+      setPreviousRoute(pathname);
+    }
+  }, [location]);
 
   return (
     <AnimatePresence exitBeforeEnter>
@@ -43,7 +52,11 @@ export function AppRoutes() {
           element={
             <AnimatedRoute
               content={
-                token ? <Navigate to="/home" /> : <AuthForm signup={false} />
+                token ? (
+                  <Navigate to={previousRoute || '/home'} />
+                ) : (
+                  <AuthForm signup={false} />
+                )
               }
             />
           }
@@ -54,7 +67,11 @@ export function AppRoutes() {
           element={
             <AnimatedRoute
               content={
-                token ? <Navigate to="/home" /> : <AuthForm signup={true} />
+                token ? (
+                  <Navigate to={previousRoute || '/home'} />
+                ) : (
+                  <AuthForm signup={true} />
+                )
               }
             />
           }
